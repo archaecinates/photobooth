@@ -3,240 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Booth</title>
+    <title>Photobooth</title>
     <style>
         body {
             font-family: 'Lora', serif;
-            padding: 20px;
+            background-color: #fefaf5;
             text-align: center;
-            background: #fffaf7;
-            font-family: 'Lora', serif;
+            padding: 50px;
         }
-
-        header {
-            margin-top: -24px;
-            text-align: left;
-            padding-left: 20px; 
-
-        }
-
-        .home-tag {
-            text-decoration: none; /* Hilangin garis bawah */
-            color: #5a4637; /* Warna coklat, bisa diganti */
-            font-size: 21px; /* Atur ukuran */
-            font-weight: bold; /* Biar lebih tegas */
-            font-family: 'Lora', serif; /* Ganti sesuai font yang cocok */
-        }
-
-
-
-        video, canvas {
-            width: 80%;
-            max-width: 532px;
-            border: 2px solid #866e5d;
-            border-radius: 20px;
-            display: block;
+        
+        .container {
+            max-width: 800px;
             margin: auto;
-            transform: scaleX(-1);
         }
 
-        #countdownText {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 80px;
-            font-weight: bold;
-            color: white;
-            display: none;
+        h1 {
+            font-size: 82px;
+            font-weight: lighter;
+            color: #5b4636;
+            margin-bottom: 4px;
+            margin-left: -720px;
         }
 
-        .button-container {
+        p {
+            color: #8a6f56;
+            font-size: 16px;
+            margin-bottom: 40px;
+            margin-left: -632px;
+        }
+
+        .buttons {
+            margin-top: -192px;
+            margin-left: 356px;
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-top: -24px;
-            position: relative;
+            gap: 24px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: 1px solid #5b4636;
+            background: transparent;
+            font-size: 16px;
+            color: #5b4636;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #5b4636;
+            color: white;
+        }
+
+        .about-button {
+            margin-left: 882px;
+            position: absolute;
+            top: 20px;
+            right: 56px;
+            padding: 8px 12px;
+            font-size: 14px;
         }
 
         button {
             font-family: 'Lora', serif;
-            padding: 8px 16px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
         }
 
-        #captureButton {
-            position: absolute;
-            right: 148px; /* Jarak tombol dari canvas */
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #866e5d;
-            color: white;
-        }
+        /* Style untuk modal */
+/* Style untuk modal */
+.modal {
+    display: none; /* Awalnya tersembunyi */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
 
-        #retakeButton {
-            position: absolute;
-            right: 58px; /* Jarak tombol dari canvas */
-            top: 50%;
-            transform: translateY(18%);
-            background-color: #c3a792;
-            color: rgb(82, 61, 33);
-        }
+/* Konten modal */
+.modal-content {
+    background-color: #f1efed;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    font-size: 18px;
+    color: #5b4636;
+    width: 300px;
+}
 
-        #photoGallery {
-            display: flex;
-            justify-content: center; /* Biar di tengah */
-            gap: 8px; /* Jarak antar foto */
-            margin-top: 64px;
-        }
+/* Tombol close */
+.close {
+    color: #5b4636;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.5s ease-in-out;
+}
 
-        .photoContainer {
-            display: none;
-            width: 140px; /* Ukuran foto */
-            height: auto;
-            border: 2px solid #866e5d;
-            border-radius: 16px;
-        }
+.close:hover {
+    transform: rotate(180deg);
+}
 
-        #doneButton {
-            display: none;
-            position: absolute;
-            right: 184px; 
-            top: 92%;
-            transform: translateY(-50%);
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #866e5d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+
+#openModal {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#openModal::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* Jarak underline dari teks */
+    width: 0;
+    height: 2px;
+    background-color: #5b4636; /* Warna underline */
+    transition: width 0.3s ease-in-out;
+}
+
+#openModal:hover::after {
+    width: 100%;
+}
+
+
     </style>
 </head>
 <body>
-    <header>
-        <div class="canvas-logo">
-            <p class="side-logo"><a href="home.html" class="home-tag">photobooth</a></p>
+    <div class="container">
+        <h1>photobooth</h1>
+        <p>Make your memories last by capturing them</p>
+        <p id="openModal" style="cursor: pointer; text-decoration: none;  margin-top: 284px;">
+            whats new?
+        </p>
+        
+        <!-- Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p style="margin-left: 4px; margin-bottom: 12px;">You'll be able to pick your frame soon!</p>
+            </div>
         </div>
-    </header>
-    <br><br>
-    
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <div class="button-container">
-        <button id="captureButton">Capture</button>
-    </div>
-    <div id="countdownText">3</div>
-    <div class="button-container">
-        <button id="retakeButton">Retake</button>
+        
+        <div class="buttons">
+            <button onclick="useCamera()">Use Camera</button>
+            <button onclick="uploadPics()">Drop your pics</button>
+        </div>
+        <button class="about-button" onclick="showAbout()">About</button>
     </div>
     
-    <div id="photoGallery">
-        <img id="photo1" class="photoContainer"/>
-        <img id="photo2" class="photoContainer"/>
-        <img id="photo3" class="photoContainer"/>
-    </div>
-
-    <button id="doneButton" style="display: none;">Done</button>
-
     <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const countdownText = document.getElementById('countdownText');
-        const captureButton = document.getElementById('captureButton');
-        const retakeButton = document.getElementById('retakeButton');
-        const doneButton = document.getElementById('doneButton');
-        const photos = [
-            document.getElementById('photo1'),
-            document.getElementById('photo2'),
-            document.getElementById('photo3')
-        ];
-    
-        let takingPhotos = false; 
-    
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            })
-            .catch(err => {
-                console.error("Gagal mengakses kamera!", err);
-            });
-    
-        function startCountdown(count, photoIndex) {
-            if (photoIndex >= photos.length) {
-                takingPhotos = false;
-                doneButton.style.display = "block"; // Munculkan tombol Done
-                return; 
-            }
-    
-            countdownText.style.display = "block";
-            countdownText.textContent = count;
-    
-            let interval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownText.textContent = count;
-                } else {
-                    clearInterval(interval);
-                    countdownText.style.display = "none";
-                    takePhoto(photoIndex);
-                }
-            }, 1000);
+        function useCamera() {
+            window.location.href = 'index.html';
         }
-    
-        function takePhoto(photoIndex) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+        function uploadPics() {
+            window.location.href = 'choosepic.html';
+        }
+        function showAbout() {
+            alert('Photobooth is an easy way to capture and upload your favorite moments!');
+        }
 
-    // Flip canvas secara horizontal
-    context.save(); 
-    context.scale(-1, 1); // Balik sumbu X
-    context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-    context.restore();
+        document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("myModal");
+        const openModal = document.getElementById("openModal");
+        const closeModal = document.querySelector(".close");
 
-    photos[photoIndex].src = canvas.toDataURL("image/png");
-    photos[photoIndex].style.display = "block";
+        // Saat tulisan diklik, munculkan modal
+        openModal.addEventListener("click", function () {
+            modal.style.display = "flex";
+        });
 
-    if (photoIndex < photos.length - 1) {
-        setTimeout(() => startCountdown(3, photoIndex + 1), 1000);
-    } else {
-        takingPhotos = false;
-        doneButton.style.display = "block"; // Munculkan tombol Done
-    }
-}
+        // Saat tombol close diklik, sembunyikan modal
+        closeModal.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
 
-        captureButton.addEventListener('click', () => {
-            if (!takingPhotos) {
-                takingPhotos = true;
-                doneButton.style.display = "none"; // Sembunyikan Done saat mulai ulang
-                startCountdown(3, 0);
+        // Saat klik di luar modal, tutup modal
+        window.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
             }
         });
-    
-        retakeButton.addEventListener('click', () => {
-            photos.forEach(photo => {
-                photo.src = ""; 
-                photo.style.display = "none"; 
-            });
-    
-            doneButton.style.display = "none"; // Sembunyikan Done saat retake
-    
-            takingPhotos = true;
-            startCountdown(3, 0);
-        });
-    
-        doneButton.addEventListener('click', () => {
-    const takenPhotos = photos.map(photo => photo.src).filter(src => src !== "");
-    localStorage.setItem("savedPhotos", JSON.stringify(takenPhotos)); // Simpan foto
-    window.location.href = "choose.html"; // Pindah ke halaman choose
-});
-
+    });
     </script>
-    
 </body>
 </html>
