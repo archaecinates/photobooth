@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <title>Photo Customizer</title>
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: #fffaf7;
+        }
+
+        .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }   
+
+        .photo-strip {
+            width: 108px;
+            background-color: #fffdfc;
+            padding: 8px;
+            padding-bottom: 14px;
+            text-align: center;
+            margin-left: -256px;
+            margin-top: 112px;
+
+        }
+
+        .photo-strip img {
+            width: 108px;
+            height: 108px;
+            object-fit: cover;
+        }
+
+        
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid #7a4a24;
+            cursor: pointer;
+        }
+
+        .selected {
+            box-shadow: 0 0 4px #7a4a24;
+        }
+
+        .containner{
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-left: 162px;
+            margin-top: 112px;
+        }
+
+         .custom-text {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 12px;
+            margin-top: 14px;
+            height: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+
+        .teks{
+            margin-top: 264px;
+            margin-left: -300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+            color: #544235;
+        }
+
+        input[type="text"] {
+            width: 172px;
+            height: 56px;
+            padding: 8px;
+            font-size: 14px;
+            border: 1.5px solid #a08572;
+            border-radius: 5px;
+            outline: none;
+            transition: 0.3s;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+
+        /* Saat input diklik/fokus */
+        input[type="text"]:focus {
+            border-color: #866e5d;
+            box-shadow: 0 0 5px rgba(95, 77, 53, 0.8);
+        }
+
+        /* Placeholder styling */
+        input[type="text"]::placeholder {
+            color: gray;
+            font-style: italic;
+        }
+
+        #previewButton {
+            margin-top: 482px;
+            margin-left: -508px;
+            padding: 8px 16px;
+            font-size: 14px;
+            border: none;
+            background-color: #866e5d;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Lora', serif;
+        }
+
+        #previewButton:hover {
+            background-color: #766253;
+        }
+
+        h2{
+            color: #786252;
+        }
+
+        p{
+            color: #544235;
+        }
+
+        .filter-options {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 15px;
+    height: 32px;
+    margin-top: 412px;
+    margin-left: -206px;
+}
+
+.filter-button {
+    background-color: transparent;
+    border: 1px solid #786252;
+    color: #786252;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-family: 'Lora', serif;
+}
+
+.filter-button:hover {
+    background-color: #544235;
+    border-color: #544235;
+    color: #daf3d5;
+}
+
+.filter-button:active {
+    background-color: #9a8970;
+    transform: scale(0.95);
+}
+
+.filter-button.selected {
+    background-color: #333;
+    color: #fff;
+    border-color: #222;
+}
+
+
+
+
+    </style>
+</head>
+<body>
+    
+    <h2>Customize your photostrip</h2>
+    
+    <div class="photo-strip" id="photoStrip">
+        <img id="photo1" src="https://via.placeholder.com/150" alt="Photo 1">
+        <img id="photo2" src="https://via.placeholder.com/150" alt="Photo 2">
+        <img id="photo3" src="https://via.placeholder.com/150" alt="Photo 3">
+        <div id="customText" class="custom-text"></div>
+    </div>
+    
+    <div class="containner">
+        
+        <p>Pick Color</p>
+        <div class="color-options" id="colorPicker">
+            <div class="color-option selected" style="background-color: #fffdfc;" data-color="#fffdfc"></div>
+            <div class="color-option selected" style="background-color: #dfc6a0;" data-color="#dfc6a0"></div>
+            <div class="color-option" style="background-color: #e3dff2;" data-color="#e3dff2"></div>
+            <div class="color-option" style="background-color: #f8dada;" data-color="#f8dada"></div>
+            <div class="color-option" style="background-color: #daf3d5;" data-color="#daf3d5"></div>
+            <div class="color-option" style="background-color: #121212;" data-color="#121212"></div>
+        </div>
+    </div>
+
+    <div class="teks">
+        <label for="customTextInput">Custom Text</label>
+        <input type="text" id="customTextInput" placeholder="type here... "value="">
+    </div>
+    
+    <div class="filter-options">
+        <button class="filter-button" onclick="applyFilter('grayscale(100%)')">Grayscale</button>
+        <button class="filter-button" onclick="applyFilter('sepia(90%)')">Sepia</button>
+        <button class="filter-button" onclick="applyFilter('brightness(120%) saturate(120%) blur(0.48px)')">Dreamy Pastel</button>
+        <button class="filter-button" onclick="applyFilter('sepia(24%) hue-rotate(320deg) contrast(72%) brightness(100%) saturate(120%)')">Retro 90s</button>
+        <button class="filter-button" onclick="applyFilter('none')">None</button>
+    </div>
+
+    <div class="preview">
+        <button id="previewButton">preview</button>
+    </div>
+
+   <script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Ambil gambar dari localStorage
+    const storedPhotos = JSON.parse(localStorage.getItem("savedPhotos")) || [];
+
+    if (storedPhotos.length > 0) {
+        document.getElementById("photo1").src = storedPhotos[0] || "https://via.placeholder.com/150";
+        document.getElementById("photo2").src = storedPhotos[1] || "https://via.placeholder.com/150";
+        document.getElementById("photo3").src = storedPhotos[2] || "https://via.placeholder.com/150";
+    }
+
+    const textInput = document.getElementById("customTextInput");
+    const textOutput = document.getElementById("customText");
+
+    // Event listener untuk input teks
+    textInput.addEventListener("input", function() {
+    textOutput.textContent = textInput.value.trim();
+});
+
+
+    function adjustTextColor() {
+        let bgColor = getComputedStyle(document.querySelector(".photo-strip")).backgroundColor;
+        let rgb = bgColor.match(/\d+/g);
+
+        if (rgb) {
+            let brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+            textOutput.style.color = brightness < 128 ? "#f0f0f0" : "#121212"; 
+        }
+    }
+
+    document.getElementById("colorPicker").addEventListener("click", function(event) {
+        if (event.target.classList.contains("color-option")) {
+            document.querySelectorAll(".color-option").forEach(option => option.classList.remove("selected"));
+            event.target.classList.add("selected");
+
+            let chosenColor = event.target.getAttribute("data-color");
+            document.querySelector(".photo-strip").style.backgroundColor = chosenColor;
+
+            adjustTextColor();
+            localStorage.setItem("photoBackgroundColor", chosenColor);
+        }
+    });
+
+    document.getElementById("previewButton").addEventListener("click", function() {
+        localStorage.setItem("photoBackgroundColor", getComputedStyle(document.querySelector(".photo-strip")).backgroundColor);
+        localStorage.setItem("photoText", textInput.value);
+        window.location.href = "preview.html";
+    });
+});
+
+function applyFilter(filter) {
+            document.getElementById("photo1").style.filter = filter;
+            document.getElementById("photo2").style.filter = filter;
+            document.getElementById("photo3").style.filter = filter;
+            
+            // Simpan filter di localStorage
+            localStorage.setItem("photoFilter", filter);
+        }
+
+        document.getElementById("previewButton").addEventListener("click", function() {
+            window.location.href = "preview.html";
+        });
+
+        // Saat halaman dimuat, ambil filter yang tersimpan
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedFilter = localStorage.getItem("photoFilter");
+            if (savedFilter) {
+                applyFilter(savedFilter);
+            }
+        });
+</script>
+
+</body>
+</html>

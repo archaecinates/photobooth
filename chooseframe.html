@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Frame</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f8f8f8;
+        }
+        .frame-options {
+            display: flex;
+            gap: 10px;
+        }
+        .frame {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .selected {
+            border-color: #007bff;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Select a Frame</h2>
+    <div class="frame-options" id="frameOptions">
+        <div class="frame" data-frame="frame1">Frame 1</div>
+        <div class="frame" data-frame="frame2">Frame 2</div>
+        <div class="frame" data-frame="frame3">Frame 3</div>
+    </div>
+    <button id="doneBtn">Done</button>
+
+    <script>
+        let selectedFrame = null;
+        document.querySelectorAll('.frame').forEach(frame => {
+            frame.addEventListener('click', function() {
+                document.querySelectorAll('.frame').forEach(f => f.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedFrame = this.getAttribute('data-frame');
+                localStorage.setItem('selectedFrame', selectedFrame);
+            });
+        });
+
+        document.getElementById('doneBtn').addEventListener('click', function() {
+            const photoMethod = localStorage.getItem('photoMethod');
+            if (photoMethod === 'index') {
+                window.location.href = 'index.html';
+            } else {
+                window.location.href = 'choosepic.html';
+            }
+        });
+    </script>
+</body>
+</html>
