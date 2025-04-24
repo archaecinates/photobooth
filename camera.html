@@ -1,242 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Photo Booth</title>
     <style>
-        body {
-            font-family: 'Lora', serif;
-            padding: 20px;
-            text-align: center;
-            background: #fffaf7;
-            font-family: 'Lora', serif;
-        }
+      body {
+        font-family: "Lora", serif;
+        padding: 20px;
+        text-align: center;
+        background: #fffaf7;
+      }
 
-        header {
-            margin-top: -24px;
-            text-align: left;
-            padding-left: 20px; 
+      header {
+        margin-top: -24px;
+        text-align: left;
+        padding-left: 20px;
+      }
 
-        }
+      .home-tag {
+        text-decoration: none;
+        color: #5a4637;
+        font-size: 21px;
+        font-weight: bold;
+      }
 
-        .home-tag {
-            text-decoration: none; /* Hilangin garis bawah */
-            color: #5a4637; /* Warna coklat, bisa diganti */
-            font-size: 21px; /* Atur ukuran */
-            font-weight: bold; /* Biar lebih tegas */
-            font-family: 'Lora', serif; /* Ganti sesuai font yang cocok */
-        }
+      video,
+      canvas {
+        width: 80%;
+        max-width: 532px;
+        border: 2px solid #866e5d;
+        border-radius: 20px;
+        display: block;
+        margin: auto;
+        transform: scaleX(-1);
+      }
 
+      #countdownText {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 80px;
+        font-weight: bold;
+        color: white;
+        display: none;
+      }
 
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: -24px;
+        position: relative;
+      }
 
-        video, canvas {
-            width: 80%;
-            max-width: 532px;
-            border: 2px solid #866e5d;
-            border-radius: 20px;
-            display: block;
-            margin: auto;
-            transform: scaleX(-1);
-        }
+      button {
+        font-family: "Lora", serif;
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+      }
 
-        #countdownText {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 80px;
-            font-weight: bold;
-            color: white;
-            display: none;
-        }
+      #captureButton {
+        background-color: #866e5d;
+        color: white;
+        margin-top: -16px;
+        margin-left: 756px;
+      }
 
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: -24px;
-            position: relative;
-        }
+      #retakeButton {
+        background-color: #c3a792;
+        color: rgb(82, 61, 33);
+        margin-top: -16px;
+      }
 
-        button {
-            font-family: 'Lora', serif;
-            padding: 8px 16px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-        }
+      #photoGallery {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 24px;
+      }
 
-        #captureButton {
-            position: absolute;
-            right: 148px; /* Jarak tombol dari canvas */
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #866e5d;
-            color: white;
-        }
+      .photoContainer {
+        display: none;
+        width: 140px;
+        height: auto;
+        border: 2px solid #866e5d;
+        border-radius: 16px;
+      }
 
-        #retakeButton {
-            position: absolute;
-            right: 58px; /* Jarak tombol dari canvas */
-            top: 50%;
-            transform: translateY(18%);
-            background-color: #c3a792;
-            color: rgb(82, 61, 33);
-        }
-
-        #photoGallery {
-            display: flex;
-            justify-content: center; /* Biar di tengah */
-            gap: 8px; /* Jarak antar foto */
-            margin-top: 64px;
-        }
-
-        .photoContainer {
-            display: none;
-            width: 140px; /* Ukuran foto */
-            height: auto;
-            border: 2px solid #866e5d;
-            border-radius: 16px;
-        }
-
-        #doneButton {
-            display: none;
-            position: absolute;
-            right: 184px; 
-            top: 92%;
-            transform: translateY(-50%);
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #866e5d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+      #doneButton {
+        display: none;
+        margin-left: 956px;
+        margin-top: -42px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #866e5d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="canvas-logo">
-            <p class="side-logo"><a href="index.html" class="home-tag">photobooth</a></p>
-        </div>
+      <p>
+        <a href="home.html" class="home-tag">photobooth</a>
+      </p>
     </header>
-    <br><br>
-    
+
     <video id="video" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <canvas id="canvas" style="display: none"></canvas>
+
     <div class="button-container">
-        <button id="captureButton">Capture</button>
-    </div>
-    <div id="countdownText">3</div>
-    <div class="button-container">
-        <button id="retakeButton">Retake</button>
-    </div>
-    
-    <div id="photoGallery">
-        <img id="photo1" class="photoContainer"/>
-        <img id="photo2" class="photoContainer"/>
-        <img id="photo3" class="photoContainer"/>
+      <button id="captureButton">Capture</button>
+      <button id="retakeButton">Retake</button>
     </div>
 
-    <button id="doneButton" style="display: none;">Done</button>
+    <div id="countdownText">3</div>
+
+    <div id="photoGallery">
+      <img id="photo1" class="photoContainer" />
+      <img id="photo2" class="photoContainer" />
+      <img id="photo3" class="photoContainer" />
+      <img id="photo4" class="photoContainer" />
+    </div>
+
+    <button id="doneButton">Done</button>
 
     <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const countdownText = document.getElementById('countdownText');
-        const captureButton = document.getElementById('captureButton');
-        const retakeButton = document.getElementById('retakeButton');
-        const doneButton = document.getElementById('doneButton');
-        const photos = [
-            document.getElementById('photo1'),
-            document.getElementById('photo2'),
-            document.getElementById('photo3')
-        ];
-    
-        let takingPhotos = false; 
-    
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            })
-            .catch(err => {
-                console.error("Gagal mengakses kamera!", err);
-            });
-    
-        function startCountdown(count, photoIndex) {
-            if (photoIndex >= photos.length) {
-                takingPhotos = false;
-                doneButton.style.display = "block"; // Munculkan tombol Done
-                return; 
-            }
-    
-            countdownText.style.display = "block";
-            countdownText.textContent = count;
-    
-            let interval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownText.textContent = count;
-                } else {
-                    clearInterval(interval);
-                    countdownText.style.display = "none";
-                    takePhoto(photoIndex);
-                }
-            }, 1000);
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      const countdownText = document.getElementById("countdownText");
+      const captureButton = document.getElementById("captureButton");
+      const retakeButton = document.getElementById("retakeButton");
+      const doneButton = document.getElementById("doneButton");
+      const photos = [
+        document.getElementById("photo1"),
+        document.getElementById("photo2"),
+        document.getElementById("photo3"),
+        document.getElementById("photo4"),
+      ];
+
+      let takingPhotos = false;
+      let photoCount = localStorage.getItem("photoCount") || 2; // Ambil jumlah foto dari localStorage
+      let maxPhotos = Math.min(photoCount, photos.length); // Pastikan tidak melebihi kapasitas
+
+      // Akses Kamera
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
+        })
+        .catch((err) => {
+          console.error("Gagal mengakses kamera!", err);
+        });
+
+      function startCountdown(count, photoIndex) {
+        if (photoIndex >= maxPhotos) {
+          takingPhotos = false;
+          doneButton.style.display = "block";
+          return;
         }
-    
-        function takePhoto(photoIndex) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
 
-    // Flip canvas secara horizontal
-    context.save(); 
-    context.scale(-1, 1); // Balik sumbu X
-    context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-    context.restore();
+        countdownText.style.display = "block";
+        countdownText.textContent = count;
 
-    photos[photoIndex].src = canvas.toDataURL("image/png");
-    photos[photoIndex].style.display = "block";
+        let interval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countdownText.textContent = count;
+          } else {
+            clearInterval(interval);
+            countdownText.style.display = "none";
+            takePhoto(photoIndex);
+          }
+        }, 1000);
+      }
 
-    if (photoIndex < photos.length - 1) {
-        setTimeout(() => startCountdown(3, photoIndex + 1), 1000);
-    } else {
-        takingPhotos = false;
-        doneButton.style.display = "block"; // Munculkan tombol Done
-    }
-}
+      function takePhoto(photoIndex) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-        captureButton.addEventListener('click', () => {
-            if (!takingPhotos) {
-                takingPhotos = true;
-                doneButton.style.display = "none"; // Sembunyikan Done saat mulai ulang
-                startCountdown(3, 0);
-            }
+        context.save();
+        context.scale(-1, 1); // Flip horizontal
+        context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        context.restore();
+
+        photos[photoIndex].src = canvas.toDataURL("image/png");
+        photos[photoIndex].style.display = "block";
+
+        if (photoIndex < maxPhotos - 1) {
+          setTimeout(() => startCountdown(3, photoIndex + 1), 1000);
+        } else {
+          takingPhotos = false;
+          doneButton.style.display = "block";
+        }
+      }
+
+      captureButton.addEventListener("click", () => {
+        if (!takingPhotos) {
+          takingPhotos = true;
+          doneButton.style.display = "none";
+          startCountdown(3, 0);
+        }
+      });
+
+      retakeButton.addEventListener("click", () => {
+        photos.forEach((photo) => {
+          photo.src = "";
+          photo.style.display = "none";
         });
-    
-        retakeButton.addEventListener('click', () => {
-            photos.forEach(photo => {
-                photo.src = ""; 
-                photo.style.display = "none"; 
-            });
-    
-            doneButton.style.display = "none"; // Sembunyikan Done saat retake
-    
-            takingPhotos = true;
-            startCountdown(3, 0);
-        });
-    
-        doneButton.addEventListener('click', () => {
-    const takenPhotos = photos.map(photo => photo.src).filter(src => src !== "");
-    localStorage.setItem("savedPhotos", JSON.stringify(takenPhotos)); // Simpan foto
-    window.location.href = "choose.html"; // Pindah ke halaman choose
-});
 
+        doneButton.style.display = "none";
+        takingPhotos = true;
+        startCountdown(3, 0);
+      });
+
+      doneButton.addEventListener("click", () => {
+        const takenPhotos = photos
+          .map((photo) => photo.src)
+          .filter((src) => src !== "");
+        localStorage.setItem("savedPhotos", JSON.stringify(takenPhotos));
+        window.location.href = "choose.html";
+      });
     </script>
-    
-</body>
+  </body>
 </html>

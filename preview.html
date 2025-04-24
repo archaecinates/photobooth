@@ -1,162 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Photo Booth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
-    
+
     <style>
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+      @keyframes slideDown {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
         }
-
-        body {
-            font-family: 'Lora', serif;
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            background: #fffaf7;
+        to {
+          transform: translateY(0);
+          opacity: 1;
         }
+      }
 
-        .photo-container {
-            position: relative;
-            background-color: rgb(255, 251, 251);
-            box-shadow: inset 0 4px 8px rgba(162, 162, 162, 0.1), 0 4px 12px rgba(120, 120, 120, 0.15);
-            width: 264px;
-            height: 442px;
-            overflow: hidden;
-            border-radius: 8px;
-            z-index: 1;
-        }
+      body {
+        font-family: "Lora", serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #fffaf7;
+        margin: 0;
+      }
 
-        .photo-strip {
-            position: absolute;
-            padding: 8px;
-            bottom: 46px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            width: 124px;
-            background-color: white;
-            z-index: 0;
-            animation: slideDown 1s ease-in-out;
-        }
+      .photo-container {
+        position: relative;
+        background-color: rgb(255, 251, 251);
+        box-shadow: inset 0 4px 8px rgba(162, 162, 162, 0.1),
+          0 4px 12px rgba(120, 120, 120, 0.15);
+        width: 264px;
+        height: 442px;
+        overflow: hidden;
+        border-radius: 8px;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .photo-strip img {
-            width: 108px;
-            height: 108px;
-            object-fit: cover;
-        }
+      .photo-strip {
+        position: relative;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 124px;
+        background-color: white;
+        animation: slideDown 1s ease-in-out;
+      }
 
-        #photo-date {
-            font-family: Georgia, 'Times New Roman', Times, serif;
-            font-style: italic;
-            transition: color 0.3s ease-in-out;
-        }
+      .photo-strip img {
+        width: 108px;
+        height: 108px;
+        object-fit: cover;
+        display: none;
+      }
 
-        #download-btn {
-            background-color: #866e5d;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+      .photo-strip[data-count="1"] {
+        grid-template-columns: 1fr;
+      }
 
+      .photo-strip[data-count="2"] {
+        grid-template-columns: repeat(1, 2fr);
+        width: 100%;
+        max-width: 108px;
+        max-height: 256px;
+      }
+
+      .photo-strip[data-count="3"] {
+        grid-template-columns: repeat(1, 3fr);
+      }
+
+      .photo-strip[data-count="4"] {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, auto);
+        width: 100%;
+        max-width: 226px;
+        max-height: 264px;
+        gap: 5px;
+      }
+
+      /* .p {
+        grid-column: 1 / -1;
+        gap: 8px;
+        font-size: 12px;
+        margin-top: 14px;
+        height: 20px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-style: italic;
+        text-align: center;
+        font-style: italic;
+      } */
+
+      #photo-date {
+        word-break: break-word;
+        font-size: 12px;
+        margin-top: 10px;
+        text-align: center;
+        padding: 0 6px;
+        max-width: 100%;
+      }
+
+      #download-btn {
+        background-color: #866e5d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+      }
     </style>
-</head>
-<body class="bg-beige flex justify-center items-center h-screen">
+  </head>
+  <body>
     <div class="text-center">
-        <p class="text-brown text-lg italic font-semibold">Cooking your masterpiece</p><br>
-        <div class="photo-container">
-            <div class="photo-strip" id="photo-strip">
-                <img id="photo1" src="https://via.placeholder.com/100" alt="Photo 1">
-                <img id="photo2" src="https://via.placeholder.com/100" alt="Photo 2">
-                <img id="photo3" src="https://via.placeholder.com/100" alt="Photo 3">
-                <p class="text-brown text-sm italic mt-2" id="photo-date">Date goes here</p>
-            </div>
+      <p class="text-brown text-lg italic font-semibold">
+        Cooking your masterpiece
+      </p>
+      <br />
+      <div class="photo-container">
+        <div class="photo-strip" id="photo-strip">
+          <img id="photo1" src="" alt="Photo 1" />
+          <img id="photo2" src="" alt="Photo 2" />
+          <img id="photo3" src="" alt="Photo 3" />
+          <img id="photo4" src="" alt="Photo 4" />
+          <p
+            class="text-brown text-sm italic mt-2 text-center"
+            id="photo-date"
+          ></p>
         </div>
-        <br>
-        <button id="download-btn">Lock This Memory</button>
+      </div>
+      <button id="download-btn">Lock This Memory</button>
     </div>
-    
+
     <script>
-
-document.addEventListener("DOMContentLoaded", () => {
-    const savedFilter = localStorage.getItem("photoFilter");
-    if (savedFilter) {
-        document.getElementById("photo1").style.filter = savedFilter;
-        document.getElementById("photo2").style.filter = savedFilter;
-        document.getElementById("photo3").style.filter = savedFilter;
-    }
-});
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const photoStrip = document.getElementById("photo-strip");
-            const photoDate = document.getElementById("photo-date");
-
-            // Ambil data dari localStorage
-            const storedPhotos = JSON.parse(localStorage.getItem("savedPhotos")) || [];
-            const storedText = localStorage.getItem("photoText") || "";
-            const storedColor = localStorage.getItem("photoBackgroundColor");
-
-            // Tampilkan foto-foto yang sudah dipilih
-            if (storedPhotos.length > 0) {
-                document.getElementById("photo1").src = storedPhotos[0] || "https://via.placeholder.com/100";
-                document.getElementById("photo2").src = storedPhotos[1] || "https://via.placeholder.com/100";
-                document.getElementById("photo3").src = storedPhotos[2] || "https://via.placeholder.com/100";
-            }
-
-            // Tampilkan teks tanggal jika ada
-            if (storedText) {
-                photoDate.innerText = storedText;
-            }
-
-            // Terapkan warna background jika ada
-            if (storedColor) {
-                photoStrip.style.backgroundColor = storedColor;
-                adjustTextColor(storedColor);
-            }
-
-            // Fungsi untuk menyesuaikan warna teks berdasarkan background
-            function adjustTextColor(bgColor) {
-                let rgb = bgColor.match(/\d+/g);
-                if (rgb) {
-                    let brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
-                    photoDate.style.color = brightness < 128 ? "#f0f0f0" : "#121212"; // Putih kalau gelap, hitam kalau terang
-                }
-            }
-
-            // Fungsi untuk mendownload gambar photo-strip saja
-            document.getElementById("download-btn").addEventListener("click", function () {
-    let scale = 3; // Resolusi lebih tajam
-
-    domtoimage.toPng(photoStrip, {
-        width: photoStrip.offsetWidth * scale,
-        height: photoStrip.offsetHeight * scale,
-        style: {
-            transform: "scale(" + scale + ")",
-            transformOrigin: "top left",
-            width: photoStrip.offsetWidth + "px",
-            height: photoStrip.offsetHeight + "px"
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedFilter = localStorage.getItem("photoFilter");
+        if (savedFilter) {
+          document.querySelectorAll(".photo-strip img").forEach((img) => {
+            img.style.filter = savedFilter;
+          });
         }
-    })
-    .then(function (dataUrl) {
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = "photo-booth.png";
-        link.click();
-    })
-    .catch(function (error) {
-        console.error("Error capturing image: ", error);
-    });
-});
+        const storedPhotos =
+          JSON.parse(localStorage.getItem("savedPhotos")) || [];
+        const photoDate = document.getElementById("photo-date");
+        const storedText = localStorage.getItem("photoText") || "";
+        const storedColor = localStorage.getItem("photoBackgroundColor");
 
+        // Load saved photos & apply filters
+        document.querySelectorAll(".photo-strip img").forEach((img, index) => {
+          if (storedPhotos[index]) {
+            img.src = storedPhotos[index];
+            img.style.display = "block"; // Show the image
+            if (savedFilter) {
+              img.style.filter = savedFilter;
+            }
+          }
         });
+
+        // Hitung jumlah foto yang tampil
+        let count = storedPhotos.filter((src) => src).length;
+        document
+          .getElementById("photo-strip")
+          .setAttribute("data-count", count);
+
+        if (storedText) {
+          photoDate.innerText = storedText;
+        }
+
+        if (storedColor) {
+          document.getElementById("photo-strip").style.backgroundColor =
+            storedColor;
+          adjustTextColor(storedColor);
+        }
+
+        function adjustTextColor(bgColor) {
+          let rgb = bgColor.match(/\d+/g);
+          if (rgb) {
+            let brightness =
+              (parseInt(rgb[0]) * 299 +
+                parseInt(rgb[1]) * 587 +
+                parseInt(rgb[2]) * 114) /
+              1000;
+            photoDate.style.color = brightness < 128 ? "#f0f0f0" : "#121212";
+          }
+        }
+
+        document
+          .getElementById("download-btn")
+          .addEventListener("click", function () {
+            let scale = 5; // Resolusi tajam
+
+            domtoimage
+              .toPng(document.getElementById("photo-strip"), {
+                width:
+                  document.getElementById("photo-strip").offsetWidth * scale,
+                height:
+                  document.getElementById("photo-strip").offsetHeight * scale,
+                style: {
+                  transform: "scale(" + scale + ")",
+                  transformOrigin: "top left",
+                  width:
+                    document.getElementById("photo-strip").offsetWidth + "px",
+                  height:
+                    document.getElementById("photo-strip").offsetHeight + "px",
+                },
+              })
+              .then(function (dataUrl) {
+                const link = document.createElement("a");
+                link.href = dataUrl;
+                link.download = "photo-booth.png";
+                link.click();
+              })
+              .catch(function (error) {
+                console.error("Error capturing image: ", error);
+              });
+          });
+      });
     </script>
-</body>
+  </body>
 </html>
