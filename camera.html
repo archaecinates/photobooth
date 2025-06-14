@@ -104,12 +104,68 @@
         border-radius: 5px;
         cursor: pointer;
       }
+
+      @media screen and (max-width: 600px) {
+          video,
+          canvas {
+          width: 100%;
+          max-width: 100%;
+          border-radius: 14px;
+      }
+
+      #countdownText {
+          margin-top: -164px;
+          font-size: 32px;
+      }
+
+      .button-container {
+          flex-direction: row; 
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 16px;
+      }
+
+      #captureButton,
+      #retakeButton {
+          font-size: 14px;
+          padding: 6px 14px;
+          width: auto;          
+          margin: 0;
+      }
+      #doneButton {
+          display: none;
+          margin: 24px auto 0 auto;
+          display: block;
+          width: 80%;
+          font-size: 15px;
+      }
+
+      header {
+          padding-left: 12px;
+      }
+
+      .home-tag {
+          font-size: 18px;
+      }
+
+      #photoGallery {
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+      }
+
+      .photoContainer {
+          border-radius: 6px;
+          width: 56%;
+          max-width: 300px;
+     }
     </style>
   </head>
   <body>
     <header>
       <p>
-        <a href="home.html" class="home-tag">photobooth</a>
+        <a href="index.html" class="home-tag">photobooth</a>
       </p>
     </header>
 
@@ -148,10 +204,9 @@
       ];
 
       let takingPhotos = false;
-      let photoCount = localStorage.getItem("photoCount") || 2; // Ambil jumlah foto dari localStorage
-      let maxPhotos = Math.min(photoCount, photos.length); // Pastikan tidak melebihi kapasitas
+      let photoCount = localStorage.getItem("photoCount") || 2; 
+      let maxPhotos = Math.min(photoCount, photos.length); 
 
-      // Akses Kamera
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((stream) => {
@@ -188,7 +243,7 @@
         canvas.height = video.videoHeight;
 
         context.save();
-        context.scale(-1, 1); // Flip horizontal
+        context.scale(-1, 1); 
         context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
         context.restore();
 
