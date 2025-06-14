@@ -9,7 +9,7 @@
         font-family: "Lora", serif;
         background-color: #fefaf5;
         text-align: center;
-        padding: 50px;
+        padding: 50px 20px;
       }
 
       .container {
@@ -127,6 +127,56 @@
       #openModal:hover::after {
         width: 100%;
       }
+
+      @media screen and (max-width: 768px) {
+  h1 {
+    padding: 8px;
+    font-size: 40px;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  p {
+    font-size: 14px;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0;
+    margin-top: 20px;
+    gap: 16px;
+  }
+
+  .about-button {
+  text-decoration: none;
+  color: #5b4636; 
+  border: 1px solid #5b4636;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: "Lora", serif;
+  border-radius: 5px;
+  background: transparent;
+  transition: all 0.3s ease;
+  position: absolute;
+  top: 20px;
+  right: 56px;
+}
+
+.about-button:hover {
+  background: #5b4636;
+  color: white;
+}
+
+
+  .modal-content {
+    width: 64%;
+    font-size: 16px;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -153,12 +203,13 @@
         <button onclick="useCamera()">Use Camera</button>
         <button onclick="uploadPics()">Drop your pics</button>
       </div>
-      <button class="about-button" onclick="showAbout()">About</button>
+      <button class="about-button" onclick="window.open('https://designada.framer.website/', '_blank')">About</button>
+
     </div>
 
     <script>
       function useCamera() {
-        localStorage.setItem("photoMethod", "camera");
+        localStorage.setItem("photoMethod", "index");
         window.location.href = "chooseframe.html";
       }
       function uploadPics() {
