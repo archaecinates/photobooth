@@ -148,17 +148,23 @@
           font-size: 18px;
       }
 
-      #photoGallery {
-          flex-direction: column;
-          align-items: center;
+     #photoGallery {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
           gap: 12px;
-      }
+          margin-top: 24px;
+    }
 
-      .photoContainer {
-          border-radius: 6px;
-          width: 56%;
-          max-width: 300px;
-     }
+    .photoContainer {
+          display: none;
+          width: 100px;
+          height: auto;
+          border: 2px solid #866e5d;
+          border-radius: 16px;
+          object-fit: cover;
+    }
     </style>
   </head>
   <body>
