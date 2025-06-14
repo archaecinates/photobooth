@@ -160,6 +160,46 @@
         background: #5b4636;
             color: #f0e6dd;
       }
+
+      @media screen and (max-width: 600px) {
+  h2 {
+    margin-top: 112px;
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .frame-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .frame {
+    width: 140px;
+    height: 140px;
+  }
+
+  .frame[data-id="2"] img {
+    width: 64px;
+  }
+
+  .frame[data-id="3"] img {
+    width: 56px;
+  }
+
+  .frame[data-id="4"] img {
+    width: 104px;
+  }
+
+  button {
+    margin: 20px auto 0 auto;
+    display: block;
+    font-size: 14px;
+    padding: 8px 16px;
+    margin-left: 56px;
+  }
+}
+
     </style>
   </head>
   <body>
