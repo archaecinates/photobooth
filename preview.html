@@ -7,18 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 
-    <style>
+       <style>
       @keyframes slideDown {
         from {
           transform: translateY(-100%);
           opacity: 0;
         }
+    
         to {
           transform: translateY(0);
           opacity: 1;
         }
       }
-
+    
       body {
         font-family: "Lora", serif;
         display: flex;
@@ -28,7 +29,7 @@
         background: #fffaf7;
         margin: 0;
       }
-
+    
       .photo-container {
         position: relative;
         background-color: rgb(255, 251, 251);
@@ -43,7 +44,7 @@
         justify-content: center;
         align-items: center;
       }
-
+    
       .photo-strip {
         position: relative;
         padding: 8px;
@@ -55,29 +56,29 @@
         background-color: white;
         animation: slideDown 1s ease-in-out;
       }
-
+    
       .photo-strip img {
         width: 108px;
         height: 108px;
         object-fit: cover;
         display: none;
       }
-
+    
       .photo-strip[data-count="1"] {
         grid-template-columns: 1fr;
       }
-
+    
       .photo-strip[data-count="2"] {
         grid-template-columns: repeat(1, 2fr);
         width: 100%;
         max-width: 108px;
         max-height: 256px;
       }
-
+    
       .photo-strip[data-count="3"] {
         grid-template-columns: repeat(1, 3fr);
       }
-
+    
       .photo-strip[data-count="4"] {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -87,23 +88,24 @@
         max-height: 264px;
         gap: 5px;
       }
-
+    
       /* .p {
-        grid-column: 1 / -1;
-        gap: 8px;
-        font-size: 12px;
-        margin-top: 14px;
-        height: 20px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-family: Georgia, "Times New Roman", Times, serif;
-        font-style: italic;
-        text-align: center;
-        font-style: italic;
-      } */
-
+            grid-column: 1 / -1;
+            gap: 8px;
+            font-size: 12px;
+            margin-top: 14px;
+            height: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-style: italic;
+            text-align: center;
+            font-style: italic;
+          } */
+    
       #photo-date {
+        grid-column: 1 / -1;
         word-break: break-word;
         font-size: 12px;
         margin-top: 10px;
@@ -111,7 +113,7 @@
         padding: 0 6px;
         max-width: 100%;
       }
-
+    
       #download-btn {
         background-color: #866e5d;
         color: white;
@@ -119,6 +121,52 @@
         border-radius: 5px;
         cursor: pointer;
         margin-top: 20px;
+      }
+    
+    
+      @media screen and (max-width: 600px) {
+        body {
+          flex-direction: column;
+          padding: 20px 10px;
+          height: auto;
+        }
+    
+        .photo-container {
+          width: 90%;
+          height: auto;
+          padding: 16px 0;
+          box-shadow: inset 0 3px 6px rgba(162, 162, 162, 0.08),
+            0 3px 10px rgba(120, 120, 120, 0.12);
+        }
+    
+        .photo-strip {
+          width: 100%;
+          max-width: 100%;
+          padding: 8px;
+          gap: 8px;
+        }
+    
+        .photo-strip img {
+          width: 100%;
+        }
+    
+        .photo-strip[data-count="4"] {
+          grid-template-columns: repeat(2, 1fr);
+          max-width: 100%;
+          max-height: unset;
+        }
+    
+        #photo-date {
+          font-size: 11px;
+          padding: 0 4px;
+        }
+    
+        #download-btn {
+          padding: 8px 16px;
+          font-size: 14px;
+          width: 100%;
+          max-width: 280px;
+        }
       }
     </style>
   </head>
@@ -157,18 +205,16 @@
         const storedText = localStorage.getItem("photoText") || "";
         const storedColor = localStorage.getItem("photoBackgroundColor");
 
-        // Load saved photos & apply filters
         document.querySelectorAll(".photo-strip img").forEach((img, index) => {
           if (storedPhotos[index]) {
             img.src = storedPhotos[index];
-            img.style.display = "block"; // Show the image
+            img.style.display = "block"; 
             if (savedFilter) {
               img.style.filter = savedFilter;
             }
           }
         });
 
-        // Hitung jumlah foto yang tampil
         let count = storedPhotos.filter((src) => src).length;
         document
           .getElementById("photo-strip")
@@ -199,7 +245,7 @@
         document
           .getElementById("download-btn")
           .addEventListener("click", function () {
-            let scale = 5; // Resolusi tajam
+            let scale = 5; 
 
             domtoimage
               .toPng(document.getElementById("photo-strip"), {
