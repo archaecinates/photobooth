@@ -77,6 +77,50 @@
             background: #5b4636;
             color: #f0e6dd;
         }
+
+        @media screen and (max-width: 768px) {
+          .container-wrapper {
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .upload-container {
+            width: 140px;
+            height: 140px;
+        }    
+
+        h1 {
+            font-size: 24px;
+        }
+
+        #doneButton {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+      }
+
+@media screen and (max-width: 480px) {
+  .upload-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .upload-text {
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  #doneButton {
+    width: 80%;
+    max-width: 240px;
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
     </style>
 </head>
 <body>
