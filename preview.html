@@ -1,305 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Photo Booth</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Booth</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 
-       <style>
-      @keyframes slideDown {
-        from {
-          transform: translateY(-100%);
-          opacity: 0;
-        }
-    
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-    
-      body {
-        font-family: "Lora", serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background: #fffaf7;
-        margin: 0;
-      }
+  <style>
+    @font-face {
+      font-family: 'Dancing Script';
+      src: url('./fonts/dancing-script-v28-latin-regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
 
-      header {
-        margin-top: -24px;
-        text-align: left;
-        padding-left: 20px;
+    @keyframes slideDown {
+      from {
+        transform: translateY(-8%);
+        opacity: 0;
       }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
-      .home-tag {
-        text-decoration: none;
-        color: #5a4637;
-        font-size: 21px;
-        font-weight: bold;
-      }
-    
-      .photo-container {
-        position: relative;
-        background-color: rgb(255, 251, 251);
-        box-shadow: inset 0 4px 8px rgba(162, 162, 162, 0.1),
-          0 4px 12px rgba(120, 120, 120, 0.15);
-        width: 264px;
-        height: 442px;
-        overflow: hidden;
-        border-radius: 8px;
-        z-index: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    
-      .photo-strip {
-        position: relative;
-        padding: 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        width: 124px;
-        background-color: white;
-        animation: slideDown 1s ease-in-out;
-      }
-    
-      .photo-strip img {
-        width: 108px;
-        height: 108px;
-        object-fit: cover;
-        display: none;
-      }
-    
-      .photo-strip[data-count="1"] {
-        grid-template-columns: 1fr;
-      }
-    
-      .photo-strip[data-count="2"] {
-        grid-template-columns: repeat(1, 2fr);
-        width: 100%;
-        max-width: 108px;
-        max-height: 256px;
-      }
-    
-      .photo-strip[data-count="3"] {
-        grid-template-columns: repeat(1, 3fr);
-      }
-    
-      .photo-strip[data-count="4"] {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, auto);
-        width: 100%;
-        max-width: 226px;
-        max-height: 264px;
-        gap: 5px;
-      }
-    
-      /* .p {
-            grid-column: 1 / -1;
-            gap: 8px;
-            font-size: 12px;
-            margin-top: 14px;
-            height: 20px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            font-family: Georgia, "Times New Roman", Times, serif;
-            font-style: italic;
-            text-align: center;
-            font-style: italic;
-          } */
-    
-      #photo-date {
-        grid-column: 1 / -1;
-        word-break: break-word;
-        font-size: 12px;
-        margin-top: 10px;
-        text-align: center;
-        padding: 0 6px;
-        max-width: 100%;
-      }
-    
-      #download-btn {
-        background-color: #866e5d;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 20px;
-      }
-    
-    
-      @media screen and (max-width: 600px) {
-        body {
-          flex-direction: column;
-          padding: 20px 10px;
-          height: auto;
-        }
+    body {
+      font-family: "Lora", serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 112vh;
+      background: #fffaf7;
+      margin: 0;
+    }
 
-        header {
-          padding-left: 12px;
-        }
+    header {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
 
-        .home-tag {
-          font-size: 18px;
-        }
-    
-        .photo-container {
-          width: 90%;
-          height: auto;
-          padding: 16px 0;
-          box-shadow: inset 0 3px 6px rgba(162, 162, 162, 0.08),
-            0 3px 10px rgba(120, 120, 120, 0.12);
-        }
-    
-        .photo-strip {
-          width: 100%;
-          max-width: 100%;
-          padding: 8px;
-          gap: 8px;
-        }
-    
-        .photo-strip img {
-          width: 100%;
-        }
-    
-        .photo-strip[data-count="4"] {
-          grid-template-columns: repeat(2, 1fr);
-          max-width: 100%;
-          max-height: unset;
-        }
-    
-        #photo-date {
-          font-size: 11px;
-          padding: 0 4px;
-        }
-    
-        #download-btn {
-          padding: 8px 16px;
-          font-size: 14px;
-          width: 100%;
-          max-width: 280px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <p>
-        <a href="index.html" class="home-tag">photobooth</a>
-      </p>
-    </header>
-    
-    <div class="text-center">
-      <p class="text-brown text-lg italic font-semibold">
-        Cooking your masterpiece
-      </p>
-      <br />
-      <div class="photo-container">
-        <div class="photo-strip" id="photo-strip">
-          <img id="photo1" src="" alt="Photo 1" />
-          <img id="photo2" src="" alt="Photo 2" />
-          <img id="photo3" src="" alt="Photo 3" />
-          <img id="photo4" src="" alt="Photo 4" />
-          <p
-            class="text-brown text-sm italic mt-2 text-center"
-            id="photo-date"
-          ></p>
-        </div>
-      </div>
-      <button id="download-btn">Lock This Memory</button>
+    .home-tag {
+      text-decoration: none;
+      color: #5a4637;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .photo-container {
+      background-color: rgb(255, 251, 251);
+      box-shadow: inset 0 4px 8px rgba(162, 162, 162, 0.1),
+        0 4px 12px rgba(120, 120, 120, 0.15);
+      width: 264px;
+      height: 442px;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .photo-strip {
+      position: relative;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 124px;
+      animation: slideDown 1s ease-in-out;
+      background-color: white;
+      font-family: 'Dancing Script', cursive;
+    }
+
+    .photo-strip[data-count="1"],
+    .photo-strip[data-count="2"],
+    .photo-strip[data-count="3"] {
+      grid-template-columns: 1fr;
+    }
+
+    .photo-strip[data-count="4"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .photo-strip img {
+      width: 108px;
+      height: 108px;
+      object-fit: cover;
+    }
+
+    #photo-date {
+      font-size: 11px;
+      margin-top: 10px;
+      text-align: center;
+      padding: 0 6px;
+      font-style: italic;
+      font-family: 'Dancing Script', cursive;
+    }
+
+    #download-btn {
+      background-color: #866e5d;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="home-tag">photobooth</a>
+  </header>
+
+  <div class="text-center">
+    <p class="text-brown text-lg italic font-semibold mt-12 md:mt-24">
+      Cooking your masterpiece
+    </p>
+    <br />
+    <div class="photo-container">
+      <div class="photo-strip" id="photo-strip"></div>
     </div>
+    <button id="download-btn">Lock This Memory</button>
+  </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedFilter = localStorage.getItem("photoFilter");
-        if (savedFilter) {
-          document.querySelectorAll(".photo-strip img").forEach((img) => {
-            img.style.filter = savedFilter;
-          });
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const photoStrip = document.getElementById("photo-strip");
+      const savedPhotos = JSON.parse(localStorage.getItem("savedPhotos")) || [];
+      const savedFilter = localStorage.getItem("photoFilter") || "";
+      const storedText = localStorage.getItem("photoText") || "";
+      const storedColor = localStorage.getItem("photoBackgroundColor") || "#ffffff";
+
+      photoStrip.innerHTML = "";
+
+      savedPhotos.forEach((src) => {
+        if (src && src.startsWith("data:image")) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.style.filter = savedFilter || "none";
+          photoStrip.appendChild(img);
         }
-        const storedPhotos =
-          JSON.parse(localStorage.getItem("savedPhotos")) || [];
-        const photoDate = document.getElementById("photo-date");
-        const storedText = localStorage.getItem("photoText") || "";
-        const storedColor = localStorage.getItem("photoBackgroundColor");
-
-        document.querySelectorAll(".photo-strip img").forEach((img, index) => {
-          if (storedPhotos[index]) {
-            img.src = storedPhotos[index];
-            img.style.display = "block"; 
-            if (savedFilter) {
-              img.style.filter = savedFilter;
-            }
-          }
-        });
-
-        let count = storedPhotos.filter((src) => src).length;
-        document
-          .getElementById("photo-strip")
-          .setAttribute("data-count", count);
-
-        if (storedText) {
-          photoDate.innerText = storedText;
-        }
-
-        if (storedColor) {
-          document.getElementById("photo-strip").style.backgroundColor =
-            storedColor;
-          adjustTextColor(storedColor);
-        }
-
-        function adjustTextColor(bgColor) {
-          let rgb = bgColor.match(/\d+/g);
-          if (rgb) {
-            let brightness =
-              (parseInt(rgb[0]) * 299 +
-                parseInt(rgb[1]) * 587 +
-                parseInt(rgb[2]) * 114) /
-              1000;
-            photoDate.style.color = brightness < 128 ? "#f0f0f0" : "#121212";
-          }
-        }
-
-        document
-          .getElementById("download-btn")
-          .addEventListener("click", function () {
-            let scale = 5; 
-
-            domtoimage
-              .toPng(document.getElementById("photo-strip"), {
-                width:
-                  document.getElementById("photo-strip").offsetWidth * scale,
-                height:
-                  document.getElementById("photo-strip").offsetHeight * scale,
-                style: {
-                  transform: "scale(" + scale + ")",
-                  transformOrigin: "top left",
-                  width:
-                    document.getElementById("photo-strip").offsetWidth + "px",
-                  height:
-                    document.getElementById("photo-strip").offsetHeight + "px",
-                },
-              })
-              .then(function (dataUrl) {
-                const link = document.createElement("a");
-                link.href = dataUrl;
-                link.download = "photo-booth.png";
-                link.click();
-              })
-              .catch(function (error) {
-                console.error("Error capturing image: ", error);
-              });
-          });
       });
-    </script>
-  </body>
+
+      const textP = document.createElement("p");
+      textP.id = "photo-date";
+      textP.innerText = storedText;
+
+      textP.style.fontFamily = "'Dancing Script', cursive";
+      photoStrip.style.fontFamily = "'Dancing Script', cursive";
+
+      photoStrip.appendChild(textP);
+      photoStrip.style.backgroundColor = storedColor;
+
+      const count = savedPhotos.length;
+      photoStrip.setAttribute("data-count", count);
+
+      adjustTextColor(storedColor);
+
+      function adjustTextColor(bgColor) {
+        const rgb = bgColor.match(/\d+/g);
+        if (rgb) {
+          const brightness =
+            (parseInt(rgb[0]) * 299 +
+              parseInt(rgb[1]) * 587 +
+              parseInt(rgb[2]) * 114) /
+            1000;
+          textP.style.color = brightness < 128 ? "#f0f0f0" : "#121212";
+        }
+      }
+
+      document.getElementById("download-btn").addEventListener("click", () => {
+        const scale = 5;
+        if (!savedPhotos.length) {
+          alert("No photos found. Please go back and add some.");
+          return;
+        }
+
+        document.fonts.ready.then(() => {
+          domtoimage.toPng(photoStrip, {
+            width: photoStrip.offsetWidth * scale,
+            height: photoStrip.offsetHeight * scale,
+            style: {
+              transform: "scale(" + scale + ")",
+              transformOrigin: "top left",
+              width: photoStrip.offsetWidth + "px",
+              height: photoStrip.offsetHeight + "px",
+            },
+          })
+          .then((dataUrl) => {
+            const link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "photo-booth.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          })
+          .catch((error) => {
+            console.error("Error capturing image: ", error);
+            alert("Download failed.");
+          });
+        });
+      });
+    });
+  </script>
+</body>
 </html>
