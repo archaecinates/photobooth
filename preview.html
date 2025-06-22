@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Booth</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: 'Dancing Script';
+      src: url('./fonts/dancing-script-v28-latin-regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+  
+    @keyframes slideDown {
+      from {
+        transform: translateY(-8%);
+        opacity: 0;
+      }
+  
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  
+    body {
+      font-family: "Lora", serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 112vh;
+      background: #fffaf7;
+      margin: 0;
+    }
+  
+    header {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+  
+    .home-tag {
+      text-decoration: none;
+      color: #5a4637;
+      font-size: 21px;
+      font-weight: bold;
+    }
+  
+    .photo-container {
+      background-color: rgb(255, 251, 251);
+      box-shadow: inset 0 4px 8px rgba(162, 162, 162, 0.1),
+        0 4px 12px rgba(120, 120, 120, 0.15);
+      width: 264px;
+      height: 442px;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .photo-strip {
+      position: relative;
+      padding: 8px;
+      display: grid;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 1px;
+      animation: slideDown 1s ease-in-out;
+      background-color: white;
+      font-family: 'Dancing Script', cursive;
+    }
+  
+    .photo-strip[data-count="1"],
+    .photo-strip[data-count="2"],
+    .photo-strip[data-count="3"] {
+      grid-template-columns: 1fr;
+    }
+  
+    .photo-strip[data-count="4"] {
+      grid-template-columns: repeat(2, 1fr);
+      width: 100%;
+      max-width: 226px;
+      max-height: 294px;
+    }
+  
+    .photo-strip img {
+      width: 108px;
+      height: 108px;
+      object-fit: cover;
+    }
+  
+    #photo-date {
+      grid-column: 1 / -1;
+      width: 100%;
+      font-size: 11px;
+      margin-top: 8px;
+      text-align: center;
+      padding: 0 6px;
+      font-style: italic;
+      font-family: 'Dancing Script', cursive;
+  
+      max-height: 36px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  
+    #download-btn {
+      background-color: #866e5d;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="home-tag">photobooth</a>
+  </header>
+
+  <div class="text-center">
+    <p class="text-brown text-lg italic font-semibold mt-12 md:mt-24">
+      Cooking your masterpiece
+    </p>
+    <br />
+    <div class="photo-container">
+      <div class="photo-strip" id="photo-strip"></div>
+    </div>
+    <button id="download-btn">Lock This Memory</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const photoStrip = document.getElementById("photo-strip");
+      const savedPhotos = JSON.parse(localStorage.getItem("savedPhotos")) || [];
+      const savedFilter = localStorage.getItem("photoFilter") || "";
+      const storedText = localStorage.getItem("photoText") || "";
+      const storedColor = localStorage.getItem("photoBackgroundColor") || "#ffffff";
+
+      photoStrip.innerHTML = "";
+
+      savedPhotos.forEach((src) => {
+        if (src && src.startsWith("data:image")) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.style.filter = savedFilter || "none";
+          photoStrip.appendChild(img);
+        }
+      });
+
+      const textP = document.createElement("p");
+      textP.id = "photo-date";
+      textP.innerText = storedText;
+
+      textP.style.fontFamily = "'Dancing Script', cursive";
+      photoStrip.style.fontFamily = "'Dancing Script', cursive";
+
+      photoStrip.appendChild(textP);
+      photoStrip.style.backgroundColor = storedColor;
+
+      const count = savedPhotos.length;
+      photoStrip.setAttribute("data-count", count);
+
+      adjustTextColor(storedColor);
+
+      function adjustTextColor(bgColor) {
+        const rgb = bgColor.match(/\d+/g);
+        if (rgb) {
+          const brightness =
+            (parseInt(rgb[0]) * 299 +
+              parseInt(rgb[1]) * 587 +
+              parseInt(rgb[2]) * 114) /
+            1000;
+          textP.style.color = brightness < 128 ? "#f0f0f0" : "#121212";
+        }
+      }
+
+      document.getElementById("download-btn").addEventListener("click", () => {
+        const scale = 5;
+        if (!savedPhotos.length) {
+          alert("No photos found. Please go back and add some.");
+          return;
+        }
+
+        document.fonts.ready.then(() => {
+          domtoimage.toPng(photoStrip, {
+            width: photoStrip.offsetWidth * scale,
+            height: photoStrip.offsetHeight * scale,
+            style: {
+              transform: "scale(" + scale + ")",
+              transformOrigin: "top left",
+              width: photoStrip.offsetWidth + "px",
+              height: photoStrip.offsetHeight + "px",
+            },
+          })
+          .then((dataUrl) => {
+            const link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "photo-booth.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          })
+          .catch((error) => {
+            console.error("Error capturing image: ", error);
+            alert("Download failed.");
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
