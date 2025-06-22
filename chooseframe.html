@@ -1,218 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Choose Frame</title>
-    <style>
-      body {
-        font-family: "Lora", serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background-color: #fefaf5;
-      }
 
-      h2 {
-        font-size: 32px;
-        color: #5b4636;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Frame</title>
+  <style>
+    body {
+      font-family: "Lora", serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #fefaf5;
+    }
+
+    header {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      gap: 120px;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding-top: 60px;
+    }
+
+
+
+    .home-tag {
+      text-decoration: none;
+      color: #5a4637;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    h2 {
+      font-size: 32px;
+      color: #5b4636;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .frame-container {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .frame-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .frame {
+      width: 180px;
+      height: 180px;
+      border: 1.5px solid #5b4636;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      cursor: pointer;
+      position: relative;
+      border-radius: 10px;
+      transition: all 0.3s;
+      overflow: visible;
+    }
+
+    .frame .placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #5b4636;
+      font-size: 14px;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .frame img {
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s, width 0.3s, height 0.3s;
+      z-index: 1;
+      position: relative;
+    }
+
+    .frame:hover {
+      border: none;
+      background: transparent;
+    }
+
+    .frame:hover .placeholder {
+      opacity: 0;
+    }
+
+    .frame:hover img {
+      opacity: 1;
+    }
+
+    .frame.selected {
+      border: none;
+      background: transparent;
+    }
+
+    .frame.selected .placeholder {
+      display: none;
+    }
+
+    .frame.selected img {
+      opacity: 1;
+    }
+
+
+    .frame[data-id="2"] img {
+      width: 100px;
+      height: auto;
+    }
+
+    .frame[data-id="3"] img {
+      width: 88px;
+      height: auto;
+    }
+
+    .frame[data-id="4"] img {
+      width: 196px;
+      height: auto;
+    }
+
+    button {
+      margin-top: 32px;
+      margin-left: -454px;
+      padding: 10px 20px;
+      border: 1.5px solid #5b4636;
+      background: transparent;
+      color: #5b4636;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+      font-family: 'Lora', serif;
+    }
+
+    button:hover {
+      background: #5b4636;
+      color: #f0e6dd;
+    }
+
+
+    @media screen and (max-width: 600px) {
+      header {
+        position: static;
+        padding-left: 12px;
+        margin-bottom: -24px;
       }
 
       .wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+        padding-top: 0;
+      }
+
+      h2 {
+        margin-top: 112px;
+        font-size: 24px;
+        text-align: center;
+      }
 
       .frame-container {
-  display: flex;
-  gap: 16px; 
-  justify-content: center; 
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-      .frame-options {
-        display: flex;
-        gap: 10px;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
       }
+
       .frame {
-            width: 180px;
-            height: 180px;
-            border: 1.5px solid #5b4636;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            cursor: pointer;
-            position: relative;
-            border-radius: 10px;
-            transition: all 0.3s;
-            overflow: visible;
-        }
-
-        .frame .placeholder {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #5b4636;
-  font-size: 14px;
-  z-index: 2;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.frame img {
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: opacity 0.3s, width 0.3s, height 0.3s;
-  z-index: 1;
-  position: relative;
-}
-
-.frame:hover {
-  border: none;
-  background: transparent;
-}
-
-.frame:hover .placeholder {
-  opacity: 0;
-}
-.frame:hover img {
-  opacity: 1;
-}
-
-.frame.selected {
-  border: none;
-  background: transparent;
-}
-.frame.selected .placeholder {
-  display: none;
-}
-.frame.selected img {
-  opacity: 1;
-}
-
-
-      .frame[data-id="2"] img {
-  width: 120px;
-  height: auto;
-}
-
-.frame[data-id="3"] img {
-  width: 118px;
-  height: auto;
-}
-
-.frame[data-id="4"] img {
-  width: 196px;
-  height: auto;
-}
-
-
-      /* .frame[data-id="1"] img {
-        width: 120px;
-        padding: 2px;
-        transition: background 0.3s;
-      }
-      .frame[data-id="1"] img:hover {
-        background: #f0e6dd;
+        width: 140px;
+        height: 140px;
       }
 
       .frame[data-id="2"] img {
         width: 64px;
-        padding: 2px;
-        transition: background 0.3s;
-      }
-      .frame[data-id="2"] img:hover {
-        background: #f0e6dd;
       }
 
       .frame[data-id="3"] img {
-        width: 104px;
-        padding: 2px;
-        transition: background 0.3s;
+        width: 56px;
       }
-      .frame[data-id="3"] img:hover {
-        background: #f0e6dd;
-      } */
+
+      .frame[data-id="4"] img {
+        width: 104px;
+      }
+
+      header {
+        padding-left: 12px;
+      }
 
       button {
-        margin-top: 30px;
-        margin-left: -454px;
-            padding: 10px 20px;
-            border: 1.5px solid #5b4636;
-            background: transparent;
-            color: #5b4636;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-family: 'Lora', serif;
+        margin: 20px auto 0 auto;
+        display: block;
+        font-size: 14px;
+        padding: 8px 16px;
+        margin-left: 56px;
       }
+    }
+  </style>
+</head>
 
-      button:hover{
-        background: #5b4636;
-            color: #f0e6dd;
-      }
+<body>
+  <header>
+    <p><a href="index.html" class="home-tag">photobooth</a></p>
+  </header>
 
-      @media screen and (max-width: 600px) {
-  h2 {
-    margin-top: 112px;
-    font-size: 24px;
-    text-align: center;
-  }
-
-  .frame-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-  }
-
-  .frame {
-    width: 140px;
-    height: 140px;
-  }
-
-  .frame[data-id="2"] img {
-    width: 64px;
-  }
-
-  .frame[data-id="3"] img {
-    width: 56px;
-  }
-
-  .frame[data-id="4"] img {
-    width: 104px;
-  }
-
-  button {
-    margin: 20px auto 0 auto;
-    display: block;
-    font-size: 14px;
-    padding: 8px 16px;
-    margin-left: 56px;
-  }
-}
-
-    </style>
-  </head>
-  <body>
-    
-    <div class="wrapper">
+  <div class="wrapper">
+    <h2>Select Your Frame</h2>
     <div class="frame-container">
-        <h2>Select Your Frame</h2>
-        <br>
-    <div class="frame" data-id="2" onclick="selectImage(this)">
+      <div class="frame" data-id="2" onclick="selectImage(this)">
         <div class="placeholder">2 photos</div>
         <img src="Frame 2.png" alt="Frame 2" />
       </div>
-      
       <div class="frame" data-id="3" onclick="selectImage(this)">
         <div class="placeholder">3 photos</div>
         <img src="Frame 3.png" alt="Frame 3" />
@@ -223,39 +242,41 @@
       </div>
     </div>
     <button id="doneBtn">Done</button>
-</div>
-</div>
-    
+  </div>
+</body>
 
-    <script>
-     let selectedFrame = null;
-const doneBtn = document.getElementById("doneBtn");
-doneBtn.disabled = true;
 
-document.querySelectorAll(".frame").forEach((frame) => {
-  frame.addEventListener("click", function () {
-    document.querySelectorAll(".frame").forEach((f) => f.classList.remove("selected"));
-    this.classList.add("selected");
-    selectedFrame = this.getAttribute("data-id");
-    localStorage.setItem("photoCount", selectedFrame);
-    doneBtn.disabled = false;
+
+<script>
+  let selectedFrame = null;
+  const doneBtn = document.getElementById("doneBtn");
+  doneBtn.disabled = true;
+
+  document.querySelectorAll(".frame").forEach((frame) => {
+    frame.addEventListener("click", function () {
+      document.querySelectorAll(".frame").forEach((f) => f.classList.remove("selected"));
+      this.classList.add("selected");
+      selectedFrame = this.getAttribute("data-id");
+      localStorage.setItem("photoCount", selectedFrame);
+      doneBtn.disabled = false;
+    });
   });
-});
 
-doneBtn.addEventListener("click", function () {
-  if (!selectedFrame) {
-    alert("Just so you know, you'll need to select the frame first");
-    return;
-  }
+  doneBtn.addEventListener("click", function () {
+    if (!selectedFrame) {
+      alert("Just so you know, you'll need to select the frame first");
+      return;
+    }
 
-  const photoMethod = localStorage.getItem("photoMethod");
-  if (photoMethod === "camera") {
-    window.location.href = "camera.html";
-  } else {
-    window.location.href = "choosepic.html";
-  }
-});
+    const photoMethod = localStorage.getItem("photoMethod");
+    if (photoMethod === "camera") {
+      window.location.href = "camera.html";
+    } else {
+      window.location.href = "choosepic.html";
+    }
+  });
 
-    </script>
-  </body>
+</script>
+</body>
+
 </html>
