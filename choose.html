@@ -238,14 +238,32 @@
         padding: 24px;
       }
 
+      .photo-container {
+         width: 80%;
+         height: auto;
+      }
+
       .photo-strip {
-        margin: 0 auto;
-        max-width: 100%;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+         width: 100%;
+         max-width: 100%;
+         justify-items: center;
+      }
+
+      .photo-strip[data-count="1"],
+      .photo-strip[data-count="2"],
+      .photo-strip[data-count="3"] {
+         grid-template-columns: 1fr;
+      }
+
+      .photo-strip[data-count="4"] {
+         grid-template-columns: repeat(2, 1fr);
       }
 
       .photo-strip img {
         width: 100%;
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 1/1;
       }
 
       .color-options {
