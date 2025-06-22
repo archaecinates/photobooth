@@ -8,6 +8,27 @@
     rel="stylesheet" />
   <title>Photo Customizer</title>
   <style>
+    @font-face {
+      font-family: 'Dancing Script';
+      src: url('./fonts/dancing-script-v28-latin-regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    header {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      z-index: 10;
+    }
+
+    .home-tag {
+      text-decoration: none;
+      color: #5a4637;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
     body {
       font-family: "Lora", serif;
       display: flex;
@@ -100,7 +121,7 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      font-family: Georgia, "Times New Roman", Times, serif;
+      font-family: 'Dancing Script', cursive;
       font-style: italic;
       text-align: center;
       font-style: italic;
@@ -125,7 +146,7 @@
       border-radius: 5px;
       outline: none;
       transition: 0.3s;
-      font-family: Georgia, "Times New Roman", Times, serif;
+      font-family: 'Dancing Script', cursive;
       font-style: italic;
     }
 
@@ -206,6 +227,12 @@
     }
 
     @media screen and (max-width: 768px) {
+      header {
+        position: static;
+        text-align: left;
+        padding: -8px 16px 0;
+      }
+
       body {
         flex-direction: column;
         align-items: center;
@@ -277,6 +304,10 @@
 </head>
 
 <body>
+  <header>
+    <a href="index.html" class="home-tag">photobooth</a>
+  </header>
+
   <h2>Customize your photostrip</h2>
 
   <div class="photo-strip" id="photoStrip">
