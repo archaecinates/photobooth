@@ -1,21 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Your Pics</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        header {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 10;
+        }
+
+        .home-tag {
+            text-decoration: none;
+            color: #5a4637;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .main-wrapper {
+            padding-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
         body {
             font-family: 'Lora', serif;
             background-color: #fefaf5;
             text-align: center;
             padding: 50px;
         }
+
         h1 {
             font-size: 32px;
             color: #5b4636;
         }
+
         .container-wrapper {
             display: flex;
             justify-content: center;
@@ -23,6 +50,7 @@
             margin-top: 30px;
             flex-wrap: wrap;
         }
+
         .upload-container {
             width: 180px;
             height: 180px;
@@ -37,9 +65,11 @@
             transition: 0.3s;
             overflow: hidden;
         }
+
         .upload-container:hover {
             background: #f0e6dd;
         }
+
         .upload-container img {
             max-width: 100%;
             max-height: 100%;
@@ -51,6 +81,7 @@
             height: 100%;
             object-fit: cover;
         }
+
         .upload-text {
             color: #5b4636;
             font-size: 14px;
@@ -58,9 +89,11 @@
             position: absolute;
             z-index: 1;
         }
+
         input[type="file"] {
             display: none;
         }
+
         #doneButton {
             margin-top: 30px;
             padding: 10px 20px;
@@ -73,57 +106,74 @@
             transition: 0.3s;
             font-family: 'Lora', serif;
         }
+
         #doneButton:hover {
             background: #5b4636;
             color: #f0e6dd;
         }
 
         @media screen and (max-width: 768px) {
-          .container-wrapper {
-            gap: 12px;
-            justify-content: center;
+            header {
+                position: static;
+                padding-left: 8px;
+                margin-top: -32px;
+                margin-bottom: 56px;
+                text-align: left;
+            }
+
+            .main-wrapper {
+                padding-top: 40px;
+            }
+
+            .container-wrapper {
+                gap: 12px;
+                justify-content: center;
+            }
+
+            .upload-container {
+                width: 140px;
+                height: 140px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            #doneButton {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
         }
 
-        .upload-container {
-            width: 140px;
-            height: 140px;
-        }    
+        @media screen and (max-width: 480px) {
+            .upload-container {
+                width: 120px;
+                height: 120px;
+            }
 
-        h1 {
-            font-size: 24px;
+            .upload-text {
+                font-size: 12px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            #doneButton {
+                width: 80%;
+                max-width: 240px;
+                font-size: 14px;
+                padding: 8px 16px;
+            }
         }
-
-        #doneButton {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-      }
-
-@media screen and (max-width: 480px) {
-  .upload-container {
-    width: 120px;
-    height: 120px;
-  }
-
-  .upload-text {
-    font-size: 12px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  #doneButton {
-    width: 80%;
-    max-width: 240px;
-    font-size: 14px;
-    padding: 8px 16px;
-  }
-}
-
     </style>
 </head>
+
 <body>
+    <header>
+        <a href="index.html" class="home-tag">photobooth</a>
+    </header>
+
     <h1>Choose Your Pics</h1>
     <div class="container-wrapper" id="uploadContainer"></div>
 
@@ -131,13 +181,13 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let photoCount = localStorage.getItem("photoCount") || 2; // Default 2 foto
+            let photoCount = localStorage.getItem("photoCount") || 2;
             let container = document.getElementById("uploadContainer");
 
             for (let i = 1; i <= photoCount; i++) {
                 let uploadDiv = document.createElement("div");
                 uploadDiv.classList.add("upload-container");
-                uploadDiv.id = `uploadBox${i}`; // ID dinamis
+                uploadDiv.id = `uploadBox${i}`;
 
                 uploadDiv.innerHTML = `
                     <span class="upload-text">Upload ${i}</span>
@@ -164,12 +214,11 @@
                         let canvas = document.createElement("canvas");
                         let ctx = canvas.getContext("2d");
 
-                        // Atur size canvas 50% dari ukuran asli
                         canvas.width = img.width * 0.5;
                         canvas.height = img.height * 0.5;
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                        let compressedImage = canvas.toDataURL("image/jpeg", 0.7); // Kualitas 70%
+                        let compressedImage = canvas.toDataURL("image/jpeg", 0.7);
 
                         document.getElementById('preview' + index).src = compressedImage;
                         document.getElementById('preview' + index).style.display = 'block';
@@ -180,30 +229,31 @@
         }
 
         function finishSelection() {
-    const selectedImages = [];
-    let photoCount = localStorage.getItem("photoCount") || 2;
+            const selectedImages = [];
+            let photoCount = localStorage.getItem("photoCount") || 2;
 
-    for (let i = 1; i <= photoCount; i++) {
-        const img = document.getElementById('preview' + i);
-        if (img && img.src && img.style.display !== 'none') { // Pastikan img tidak null
-            selectedImages.push(img.src);
+            for (let i = 1; i <= photoCount; i++) {
+                const img = document.getElementById('preview' + i);
+                if (img && img.src && img.style.display !== 'none') {
+                    selectedImages.push(img.src);
+                }
+            }
+
+            if (selectedImages.length === 0) {
+                alert("Please upload at least one image before proceeding!");
+                return;
+            }
+
+            try {
+                localStorage.setItem("savedPhotos", JSON.stringify(selectedImages));
+                console.log("Images saved to localStorage:", selectedImages);
+                window.location.href = "choose.html";
+            } catch (error) {
+                console.error("Error saving to localStorage:", error);
+            }
         }
-    }
-
-    if (selectedImages.length === 0) {
-        alert("Please upload at least one image before proceeding!");
-        return;
-    }
-
-    try {
-        localStorage.setItem("savedPhotos", JSON.stringify(selectedImages));
-        console.log("Images saved to localStorage:", selectedImages);
-        window.location.href = "choose.html";
-    } catch (error) {
-        console.error("Error saving to localStorage:", error);
-    }
-}
 
     </script>
 </body>
+
 </html>
