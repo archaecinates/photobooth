@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photo Booth</title>
   <script src="https://cdn.tailwindcss.com"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 
   <style>
     @font-face {
@@ -14,19 +15,19 @@
       font-weight: normal;
       font-style: normal;
     }
-  
+
     @keyframes slideDown {
       from {
         transform: translateY(-8%);
         opacity: 0;
       }
-  
+
       to {
         transform: translateY(0);
         opacity: 1;
       }
     }
-  
+
     body {
       font-family: "Lora", serif;
       display: flex;
@@ -36,20 +37,20 @@
       background: #fffaf7;
       margin: 0;
     }
-  
+
     header {
       position: absolute;
       top: 20px;
       left: 20px;
     }
-  
+
     .home-tag {
       text-decoration: none;
       color: #5a4637;
       font-size: 21px;
       font-weight: bold;
     }
-  
+
     .photo-container {
       background-color: rgb(255, 251, 251);
       box-shadow: inset 0 4px 8px rgba(162, 162, 162, 0.1),
@@ -62,7 +63,7 @@
       justify-content: center;
       align-items: center;
     }
-  
+
     .photo-strip {
       position: relative;
       padding: 8px;
@@ -74,26 +75,26 @@
       background-color: white;
       font-family: 'Dancing Script', cursive;
     }
-    
+
     .photo-strip[data-count="1"],
     .photo-strip[data-count="2"],
     .photo-strip[data-count="3"] {
       grid-template-columns: 1fr;
     }
-  
+
     .photo-strip[data-count="4"] {
       grid-template-columns: repeat(2, 1fr);
       width: 100%;
       max-width: 226px;
       max-height: 294px;
     }
-  
+
     .photo-strip img {
       width: 108px;
       height: 108px;
       object-fit: cover;
     }
-  
+
     #photo-date {
       grid-column: 1 / -1;
       width: 100%;
@@ -103,13 +104,13 @@
       padding: 0 6px;
       font-style: italic;
       font-family: 'Dancing Script', cursive;
-  
+
       max-height: 36px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-  
+
     #download-btn {
       background-color: #866e5d;
       color: white;
@@ -120,6 +121,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <a href="index.html" class="home-tag">photobooth</a>
@@ -151,9 +153,11 @@
           const img = document.createElement("img");
           img.src = src;
           img.style.filter = savedFilter || "none";
+          img.crossOrigin = "anonymous"; // ← Tambahkan ini di sini
           photoStrip.appendChild(img);
         }
       });
+
 
       const textP = document.createElement("p");
       textP.id = "photo-date";
@@ -183,34 +187,48 @@
       }
 
       document.getElementById("download-btn").addEventListener("click", () => {
+        const images = photoStrip.querySelectorAll("img");
         const scale = 5;
-        if (!savedPhotos.length) {
+
+        if (!images.length) {
           alert("No photos found. Please go back and add some.");
           return;
         }
 
-        document.fonts.ready.then(() => {
-          domtoimage.toPng(photoStrip, {
-            width: photoStrip.offsetWidth * scale,
-            height: photoStrip.offsetHeight * scale,
-            style: {
-              transform: "scale(" + scale + ")",
-              transformOrigin: "top left",
-              width: photoStrip.offsetWidth + "px",
-              height: photoStrip.offsetHeight + "px",
-            },
-          })
-          .then((dataUrl) => {
-            const link = document.createElement("a");
-            link.href = dataUrl;
-            link.download = "photo-booth.png";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          })
-          .catch((error) => {
-            console.error("Error capturing image: ", error);
-            alert("Download failed.");
+        // Tunggu semua gambar selesai dimuat
+        const promises = Array.from(images).map((img) => {
+          return new Promise((resolve) => {
+            if (!img.src || img.style.display === "none") return resolve();
+            if (img.complete) return resolve();
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        });
+
+        Promise.all(promises).then(() => {
+          document.fonts.ready.then(() => {
+            domtoimage.toPng(photoStrip, {
+              width: photoStrip.offsetWidth * scale,
+              height: photoStrip.offsetHeight * scale,
+              style: {
+                transform: "scale(" + scale + ")",
+                transformOrigin: "top left",
+                width: photoStrip.offsetWidth + "px",
+                height: photoStrip.offsetHeight + "px",
+              },
+            })
+              .then((dataUrl) => {
+                const link = document.createElement("a");
+                link.href = dataUrl;
+                link.download = "photo-booth.png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              })
+              .catch((error) => {
+                console.error("Error capturing image: ", error);
+                alert("Download failed.");
+              });
           });
         });
       });
