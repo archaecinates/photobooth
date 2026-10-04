@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photo Booth</title>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
   <style>
     body {
       font-family: "Lora", serif;
-      padding: 20px;
+      margin: 0;
+      padding: 16px 20px 32px;
       text-align: center;
       background: #fffaf7;
     }
 
     header {
-      margin-top: -24px;
+      margin-bottom: 16px;
       text-align: left;
-      padding-left: 20px;
+    }
+
+    header p {
+      margin: 0;
     }
 
     .home-tag {
@@ -26,15 +35,41 @@
       font-weight: bold;
     }
 
+    .booth {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+    }
+
+    .camera-col {
+      flex: 0 1 532px;
+      min-width: 0;
+    }
+
+    .video-wrap {
+      position: relative;
+    }
+
     video,
-    canvas {
-      width: 80%;
-      max-width: 532px;
+    #canvas {
+      width: 100%;
+      box-sizing: border-box;
       border: 2px solid #866e5d;
       border-radius: 20px;
       display: block;
       margin: auto;
       transform: scaleX(-1);
+    }
+
+    video {
+      aspect-ratio: 4 / 3;
+      background: #efe6dd;
+      object-fit: cover;
+    }
+
+    #canvas {
+      display: none;
     }
 
     #countdownText {
@@ -45,15 +80,24 @@
       font-size: 80px;
       font-weight: bold;
       color: white;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+      pointer-events: none;
       display: none;
+    }
+
+    #cameraMsg {
+      display: none;
+      margin: 16px auto 0;
+      max-width: 480px;
+      font-size: 14px;
+      color: #8a4b3a;
     }
 
     .button-container {
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin-top: -24px;
-      position: relative;
+      margin-top: 16px;
     }
 
     button {
@@ -65,38 +109,64 @@
       border-radius: 4px;
     }
 
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
     #captureButton {
       background-color: #866e5d;
       color: white;
-      margin-top: -16px;
-      margin-left: 756px;
     }
 
     #retakeButton {
       background-color: #c3a792;
       color: rgb(82, 61, 33);
-      margin-top: -16px;
+    }
+
+    .shots-col {
+      flex: 0 0 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     #photoGallery {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       gap: 8px;
-      margin-top: 24px;
+      width: 100%;
     }
 
-    .photoContainer {
-      display: none;
-      width: 140px;
-      height: auto;
-      border: 2px solid #866e5d;
+    .slot {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      box-sizing: border-box;
+      border: 2px dashed #c3a792;
       border-radius: 16px;
+      overflow: hidden;
+      background: #fbf4ee;
+    }
+
+    .slot.filled {
+      border: 2px solid #866e5d;
+    }
+
+    .slot img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slot.filled img {
+      display: block;
     }
 
     #doneButton {
       display: none;
-      margin-left: 956px;
-      margin-top: -42px;
+      width: 100%;
+      margin-top: 16px;
       padding: 10px 20px;
       font-size: 16px;
       background-color: #866e5d;
@@ -106,56 +176,66 @@
       cursor: pointer;
     }
 
-    /* Responsiveness */
-    @media (max-width: 768px) {
+    @media screen and (max-width: 800px) {
+      .booth {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .camera-col,
+      .shots-col {
+        flex: none;
+        width: 100%;
+        max-width: 532px;
+      }
 
       video,
-      canvas {
-        width: 95%;
+      #canvas {
+        border-radius: 14px;
+      }
+
+      #countdownText {
+        font-size: 56px;
       }
 
       .button-container {
-        flex-direction: column;
-        align-items: center;
+        gap: 8px;
       }
 
       #captureButton,
       #retakeButton {
-        margin-left: 0;
-        margin-top: 10px;
-      }
-
-      #doneButton {
-        margin-left: 0;
-        margin-top: 20px;
+        font-size: 14px;
+        padding: 8px 18px;
       }
 
       #photoGallery {
-        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
       }
 
-      .photoContainer {
-        width: 40%;
-        margin-bottom: 10px;
+      .slot {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+        max-width: 96px;
+        border-radius: 12px;
       }
-    }
 
-    @media (max-width: 480px) {
-      #countdownText {
-        font-size: 48px;
+      #doneButton {
+        width: 80%;
+        max-width: 280px;
+        font-size: 15px;
       }
 
       .home-tag {
         font-size: 18px;
       }
+    }
 
-      button {
-        font-size: 14px;
-        padding: 6px 12px;
-      }
-
-      .photoContainer {
-        width: 80%;
+    @media screen and (max-width: 480px) {
+      #countdownText {
+        font-size: 48px;
       }
     }
   </style>
@@ -164,37 +244,61 @@
 <body>
   <header>
     <p>
-      <a href="home.html" class="home-tag">photobooth</a>
+      <a href="index.html" class="home-tag">photobooth</a>
     </p>
   </header>
 
-  <video id="video" autoplay playsinline></video>
-  <canvas id="canvas" style="display: none"></canvas>
+  <div class="booth">
+    <div class="camera-col">
+      <div class="video-wrap">
+        <video id="video" autoplay playsinline muted></video>
+        <div id="countdownText">3</div>
+      </div>
 
-  <div class="button-container">
-    <button id="captureButton">Capture</button>
-    <button id="retakeButton">Retake</button>
+      <canvas id="canvas"></canvas>
+
+      <p id="cameraMsg"></p>
+
+      <div class="button-container">
+        <button id="captureButton">Capture</button>
+        <button id="retakeButton">Retake</button>
+      </div>
+    </div>
+
+    <div class="shots-col">
+      <div id="photoGallery">
+        <div class="slot">
+          <img id="photo1" alt="Photo 1" />
+        </div>
+
+        <div class="slot">
+          <img id="photo2" alt="Photo 2" />
+        </div>
+
+        <div class="slot">
+          <img id="photo3" alt="Photo 3" />
+        </div>
+
+        <div class="slot">
+          <img id="photo4" alt="Photo 4" />
+        </div>
+      </div>
+
+      <button id="doneButton">Done</button>
+    </div>
   </div>
-
-  <div id="countdownText">3</div>
-
-  <div id="photoGallery">
-    <img id="photo1" class="photoContainer" />
-    <img id="photo2" class="photoContainer" />
-    <img id="photo3" class="photoContainer" />
-    <img id="photo4" class="photoContainer" />
-  </div>
-
-  <button id="doneButton">Done</button>
 
   <script>
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const context = canvas.getContext("2d");
+
     const countdownText = document.getElementById("countdownText");
     const captureButton = document.getElementById("captureButton");
     const retakeButton = document.getElementById("retakeButton");
     const doneButton = document.getElementById("doneButton");
+    const cameraMsg = document.getElementById("cameraMsg");
+
     const photos = [
       document.getElementById("photo1"),
       document.getElementById("photo2"),
@@ -202,18 +306,76 @@
       document.getElementById("photo4"),
     ];
 
-    let takingPhotos = false;
-    let photoCount = localStorage.getItem("photoCount") || 2;
-    let maxPhotos = Math.min(photoCount, photos.length);
+    const slots = Array.from(document.querySelectorAll(".slot"));
 
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        video.srcObject = stream;
-      })
-      .catch((err) => {
-        console.error("Gagal mengakses kamera!", err);
+    let takingPhotos = false;
+
+    const photoCount =
+      parseInt(localStorage.getItem("photoCount")) || 2;
+
+    const maxPhotos = Math.min(photoCount, photos.length);
+
+    // Hide unused photo slots
+    slots.forEach((slot, i) => {
+      if (i >= maxPhotos) {
+        slot.style.display = "none";
+      }
+    });
+
+    function fillSlot(i, src) {
+      photos[i].src = src;
+      slots[i].classList.add("filled");
+    }
+
+    function clearSlots() {
+      photos.forEach((photo, i) => {
+        photo.removeAttribute("src");
+        slots[i].classList.remove("filled");
       });
+    }
+
+    function showCameraError(text) {
+      cameraMsg.textContent = text;
+      cameraMsg.style.display = "block";
+
+      captureButton.disabled = true;
+      retakeButton.disabled = true;
+    }
+
+    // Capture button aktif setelah kamera siap
+    captureButton.disabled = true;
+
+    video.addEventListener("loadedmetadata", () => {
+      captureButton.disabled = false;
+    });
+
+    // Check camera availability
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
+      showCameraError(
+        "Camera isn't available here. Open this page in Chrome or Safari using an https link."
+      );
+    } else {
+      navigator.mediaDevices
+        .getUserMedia({
+          video: {
+            facingMode: "user",
+          },
+          audio: false,
+        })
+        .then((stream) => {
+          video.srcObject = stream;
+        })
+        .catch((err) => {
+          console.error("Gagal mengakses kamera!", err);
+
+          showCameraError(
+            "Couldn't access the camera. Allow camera permission in your browser settings, then reload this page."
+          );
+        });
+    }
 
     function startCountdown(count, photoIndex) {
       if (photoIndex >= maxPhotos) {
@@ -225,67 +387,122 @@
       countdownText.style.display = "block";
       countdownText.textContent = count;
 
-      let interval = setInterval(() => {
+      const interval = setInterval(() => {
         count--;
+
         if (count > 0) {
           countdownText.textContent = count;
         } else {
           clearInterval(interval);
+
           countdownText.style.display = "none";
+
           takePhoto(photoIndex);
         }
       }, 1000);
     }
 
     function takePhoto(photoIndex) {
-      const scaleUp = 2.5;
+      if (!video.videoWidth) {
+        takingPhotos = false;
 
-      canvas.width = video.videoWidth * scaleUp;
-      canvas.height = video.videoHeight * scaleUp;
+        showCameraError(
+          "The camera isn't ready yet. Please reload this page and try again."
+        );
 
+        return;
+      }
+
+      // Smaller image size for mobile/storage
+      const MAX_W = 800;
+
+      const ratio = Math.min(
+        1,
+        MAX_W / video.videoWidth
+      );
+
+      canvas.width = Math.round(
+        video.videoWidth * ratio
+      );
+
+      canvas.height = Math.round(
+        video.videoHeight * ratio
+      );
+
+      // Mirror photo horizontally
       context.save();
-      context.translate(canvas.width, 0); // mirror horizontal
-      context.scale(-scaleUp, scaleUp);   // scale dan flip
-      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+      context.scale(-1, 1);
+
+      context.drawImage(
+        video,
+        -canvas.width,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
       context.restore();
 
-      photos[photoIndex].src = canvas.toDataURL("image/png", 1.0); // kualitas maksimal
-      photos[photoIndex].style.display = "block";
+      const imageData = canvas.toDataURL(
+        "image/jpeg",
+        0.85
+      );
+
+      fillSlot(photoIndex, imageData);
 
       if (photoIndex < maxPhotos - 1) {
-        setTimeout(() => startCountdown(3, photoIndex + 1), 1000);
+        setTimeout(() => {
+          startCountdown(3, photoIndex + 1);
+        }, 1000);
       } else {
         takingPhotos = false;
         doneButton.style.display = "block";
       }
     }
 
-
     captureButton.addEventListener("click", () => {
-      if (!takingPhotos) {
-        takingPhotos = true;
-        doneButton.style.display = "none";
-        startCountdown(3, 0);
-      }
+      if (takingPhotos) return;
+
+      takingPhotos = true;
+      doneButton.style.display = "none";
+
+      startCountdown(3, 0);
     });
 
     retakeButton.addEventListener("click", () => {
-      photos.forEach((photo) => {
-        photo.src = "";
-        photo.style.display = "none";
-      });
+      if (takingPhotos) return;
+
+      clearSlots();
 
       doneButton.style.display = "none";
       takingPhotos = true;
+
       startCountdown(3, 0);
     });
 
     doneButton.addEventListener("click", () => {
       const takenPhotos = photos
-        .map((photo) => photo.src)
-        .filter((src) => src !== "");
-      localStorage.setItem("savedPhotos", JSON.stringify(takenPhotos));
-      window.location.href = "choose.html";
+        .map((photo) => photo.getAttribute("src"))
+        .filter(Boolean);
+
+      try {
+        localStorage.setItem(
+          "savedPhotos",
+          JSON.stringify(takenPhotos)
+        );
+
+        window.location.href = "choose.html";
+      } catch (error) {
+        console.error(
+          "Gagal menyimpan foto:",
+          error
+        );
+
+        alert(
+          "Couldn't save your photos (storage is full). Please retake them."
+        );
+      }
     });
   </script>
 </body>
