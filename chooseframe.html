@@ -6,14 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Frame</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Lora", serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 24px 20px;
       background-color: #fefaf5;
+      color: #5b4636;
     }
 
     header {
@@ -21,19 +29,11 @@
       top: 16px;
       left: 16px;
       z-index: 10;
-      gap: 120px;
     }
 
-    .wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding-top: 60px;
+    header p {
+      margin: 0;
     }
-
-
 
     .home-tag {
       text-decoration: none;
@@ -42,43 +42,42 @@
       font-weight: bold;
     }
 
-    h2 {
-      font-size: 32px;
-      color: #5b4636;
-    }
-
     .wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding-top: 40px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 32px;
+      color: #5b4636;
+      text-align: center;
     }
 
     .frame-container {
       display: flex;
-      gap: 16px;
       justify-content: center;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .frame-options {
-      display: flex;
-      gap: 10px;
+      gap: 16px;
+      margin-top: 24px;
     }
 
     .frame {
-      width: 180px;
-      height: 180px;
-      border: 1.5px solid #5b4636;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      cursor: pointer;
       position: relative;
+      width: 180px;
+      aspect-ratio: 5 / 8;
+      border: 1.5px solid #5b4636;
       border-radius: 10px;
-      transition: all 0.3s;
-      overflow: visible;
+      background: transparent;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .frame:focus-visible {
+      outline: 2px solid #866e5d;
+      outline-offset: 3px;
     }
 
     .frame .placeholder {
@@ -88,133 +87,139 @@
       transform: translate(-50%, -50%);
       color: #5b4636;
       font-size: 14px;
-      z-index: 2;
+      white-space: nowrap;
       pointer-events: none;
       transition: opacity 0.3s;
     }
 
     .frame img {
-      opacity: 0;
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: opacity 0.3s, width 0.3s, height 0.3s;
-      z-index: 1;
-      position: relative;
-    }
-
-    .frame:hover {
-      border: none;
-      background: transparent;
-    }
-
-    .frame:hover .placeholder {
+      padding: 12px;
+      object-fit: contain;
       opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
     }
 
-    .frame:hover img {
-      opacity: 1;
+    @media (hover: hover) {
+      .frame:hover {
+        border-color: transparent;
+        background: #f6ede4;
+      }
+
+      .frame:hover .placeholder {
+        opacity: 0;
+      }
+
+      .frame:hover img {
+        opacity: 1;
+      }
     }
 
     .frame.selected {
-      border: none;
-      background: transparent;
+      border-color: #5b4636;
+      background: #f0e6dd;
     }
 
     .frame.selected .placeholder {
-      display: none;
+      opacity: 0;
     }
 
     .frame.selected img {
       opacity: 1;
     }
 
-
-    .frame[data-id="2"] img {
-      width: 100px;
-      height: auto;
-    }
-
-    .frame[data-id="3"] img {
-      width: 88px;
-      height: auto;
-    }
-
-    .frame[data-id="4"] img {
-      width: 196px;
-      height: auto;
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 32px;
     }
 
     button {
-      margin-top: 32px;
-      margin-left: -454px;
-      padding: 10px 20px;
+      padding: 10px 24px;
       border: 1.5px solid #5b4636;
       background: transparent;
       color: #5b4636;
       font-size: 16px;
+      font-family: "Lora", serif;
       cursor: pointer;
       border-radius: 8px;
       transition: 0.3s;
-      font-family: 'Lora', serif;
     }
 
-    button:hover {
+    button:not(:disabled):hover {
       background: #5b4636;
       color: #f0e6dd;
     }
 
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    #backBtn {
+      border-color: #c3a792;
+      color: #866e5d;
+    }
+
+    #backBtn:hover {
+      background: #f0e6dd;
+      border-color: #5b4636;
+      color: #5b4636;
+    }
 
     @media screen and (max-width: 600px) {
+      body {
+        justify-content: flex-start;
+        padding: 0 12px 24px;
+      }
+
       header {
         position: static;
-        padding-left: 12px;
-        margin-bottom: -24px;
+        align-self: flex-start;
+        padding: 16px 0 0;
       }
 
       .wrapper {
-        padding-top: 0;
+        flex: 1;
+        justify-content: center;
+        width: 100%;
+        padding-top: 8px;
       }
 
       h2 {
-        margin-top: 112px;
         font-size: 24px;
-        text-align: center;
       }
 
       .frame-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 24px;
+        gap: 10px;
+        margin-top: 16px;
       }
 
       .frame {
-        width: 140px;
-        height: 140px;
+        width: min(28vw, 110px);
+        border-radius: 8px;
       }
 
-      .frame[data-id="2"] img {
-        width: 64px;
+      .frame img {
+        padding: 6px;
       }
 
-      .frame[data-id="3"] img {
-        width: 56px;
+      .frame .placeholder {
+        font-size: 13px;
       }
 
-      .frame[data-id="4"] img {
-        width: 104px;
-      }
-
-      header {
-        padding-left: 12px;
+      .actions {
+        margin-top: 28px;
       }
 
       button {
-        margin: 20px auto 0 auto;
-        display: block;
-        font-size: 14px;
-        padding: 8px 16px;
-        margin-left: 56px;
+        padding: 12px 24px;
+        font-size: 15px;
       }
     }
   </style>
@@ -227,55 +232,63 @@
 
   <div class="wrapper">
     <h2>Select Your Frame</h2>
+
     <div class="frame-container">
-      <div class="frame" data-id="2" onclick="selectImage(this)">
+      <div class="frame" data-id="2" role="button" tabindex="0" aria-pressed="false">
         <div class="placeholder">2 photos</div>
-        <img src="Frame 2.png" alt="Frame 2" />
+        <img src="Frame 2.png" alt="Frame for 2 photos" />
       </div>
-      <div class="frame" data-id="3" onclick="selectImage(this)">
+      <div class="frame" data-id="3" role="button" tabindex="0" aria-pressed="false">
         <div class="placeholder">3 photos</div>
-        <img src="Frame 3.png" alt="Frame 3" />
+        <img src="Frame 3.png" alt="Frame for 3 photos" />
       </div>
-      <div class="frame" data-id="4" onclick="selectImage(this)">
+      <div class="frame" data-id="4" role="button" tabindex="0" aria-pressed="false">
         <div class="placeholder">4 photos</div>
-        <img src="Frame 4.png" alt="Frame 4" />
+        <img src="Frame 4.png" alt="Frame for 4 photos" />
       </div>
     </div>
-    <button id="doneBtn">Done</button>
+
+    <div class="actions">
+      <button id="backBtn" type="button" onclick="window.location.href = 'index.html'">Back</button>
+      <button id="doneBtn" type="button">Done</button>
+    </div>
   </div>
-</body>
 
+  <script>
+    let selectedFrame = null;
+    const doneBtn = document.getElementById("doneBtn");
+    const frames = document.querySelectorAll(".frame");
+    doneBtn.disabled = true;
 
+    function selectFrame(frame) {
+      frames.forEach((f) => {
+        f.classList.remove("selected");
+        f.setAttribute("aria-pressed", "false");
+      });
+      frame.classList.add("selected");
+      frame.setAttribute("aria-pressed", "true");
 
-<script>
-  let selectedFrame = null;
-  const doneBtn = document.getElementById("doneBtn");
-  doneBtn.disabled = true;
-
-  document.querySelectorAll(".frame").forEach((frame) => {
-    frame.addEventListener("click", function () {
-      document.querySelectorAll(".frame").forEach((f) => f.classList.remove("selected"));
-      this.classList.add("selected");
-      selectedFrame = this.getAttribute("data-id");
+      selectedFrame = frame.getAttribute("data-id");
       localStorage.setItem("photoCount", selectedFrame);
       doneBtn.disabled = false;
-    });
-  });
+    }
 
-  doneBtn.addEventListener("click", function () {
+    frames.forEach((frame) => {
+      frame.addEventListener("click", () => selectFrame(frame));
+      frame.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectFrame(frame);
+        }
+      });
+    });
+      doneBtn.addEventListener("click", () => {
     if (!selectedFrame) {
       alert("Just so you know, you'll need to select the frame first");
       return;
     }
-
-    const photoMethod = localStorage.getItem("photoMethod");
-    if (photoMethod === "camera") {
-      window.location.href = "camera.html";
-    } else {
-      window.location.href = "choosepic.html";
-    }
+    window.location.href = "choosestyle.html";
   });
-
-</script>
+  </script>
 </body>
 </html>
