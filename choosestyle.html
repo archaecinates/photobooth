@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Style</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Dancing Script';
+      src: url('./fonts/dancing-script-v28-latin-regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: "Lora", serif;
+      background-color: #fefaf5;
+      color: #5b4636;
+      margin: 0;
+      padding: 0 20px 48px;
+      text-align: center;
+    }
+
+    header {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+    }
+
+    .home-tag {
+      text-decoration: none;
+      color: #5a4637;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding-top: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin: 0 0 4px;
+      color: #5b4636;
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      color: #8a6f56;
+      font-size: 15px;
+    }
+
+    .style-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .style-card {
+      width: 176px;
+      padding: 16px 12px 14px;
+      border: 1.5px solid #cdbba9;
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      font-family: "Lora", serif;
+      color: #5b4636;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .style-card:hover {
+      background: #f6ede4;
+    }
+
+    .style-card:focus-visible {
+      outline: 2px solid #866e5d;
+      outline-offset: 2px;
+    }
+
+    .style-card.selected {
+      border-color: #5b4636;
+      background: #f0e6dd;
+    }
+
+    .style-card .name {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .style-card .desc {
+      font-size: 13px;
+      color: #8a6f56;
+    }
+
+    .mini-wrap {
+      zoom: 0.5;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+    }
+
+    .mini-strip {
+      display: grid;
+      gap: 8px;
+      padding: 8px;
+      justify-items: center;
+      align-items: center;
+      width: 108px;
+      box-shadow: 0 2px 8px rgba(90, 70, 55, 0.2);
+    }
+
+    .mini-strip[data-count="4"] {
+      grid-template-columns: repeat(2, 1fr);
+      width: 224px;
+    }
+
+    .mini-box {
+      width: 108px;
+      height: 108px;
+      background: #d8cdc4;
+    }
+
+    .color-section {
+      margin-top: 28px;
+    }
+
+    .color-section p,
+    .note {
+      margin: 0 0 10px;
+      color: #544235;
+    }
+
+    .color-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .color-option {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid #7a4a24;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .color-option.selected {
+      box-shadow: 0 0 0 3px #fefaf5, 0 0 0 5px #7a4a24;
+    }
+
+    .note {
+      margin-top: 28px;
+      font-size: 14px;
+      color: #8a6f56;
+    }
+
+    #nextBtn {
+      margin-top: 32px;
+      padding: 10px 28px;
+      border: 1.5px solid #5b4636;
+      background: transparent;
+      color: #5b4636;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+      font-family: "Lora", serif;
+    }
+
+    #nextBtn:hover {
+      background: #5b4636;
+      color: #f0e6dd;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .actions #nextBtn {
+      margin-top: 0;
+    }
+
+    #backBtn {
+      padding: 10px 28px;
+      border: 1.5px solid #c3a792;
+      background: transparent;
+      color: #866e5d;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+      font-family: "Lora", serif;
+    }
+
+    #backBtn:hover {
+      background: #f0e6dd;
+      border-color: #5b4636;
+      color: #5b4636;
+    }
+
+    @media screen and (max-width: 600px) {
+      header {
+        position: static;
+        padding-top: 16px;
+        text-align: left;
+      }
+
+      .wrapper {
+        padding-top: 8px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .style-grid {
+        gap: 10px;
+      }
+
+      .style-card {
+        box-sizing: border-box;
+        width: calc(50% - 5px);
+        padding: 12px 8px 10px;
+        gap: 6px;
+      }
+
+      .style-card .desc {
+        display: none;
+      }
+
+      .mini-wrap {
+        zoom: 0.38;
+        min-height: 0;
+      }
+
+      .color-section {
+        margin-top: 16px;
+      }
+
+      .color-option {
+        width: 32px;
+        height: 32px;
+      }
+
+      .note {
+        margin-top: 16px;
+      }
+
+      .actions {
+        position: sticky;
+        bottom: 12px;
+        width: 100%;
+        max-width: 280px;
+        margin-top: 20px;
+        padding: 6px 0;
+        background: #fefaf5;
+      }
+
+      .actions button {
+        flex: 1;
+        padding: 12px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="home-tag">photobooth</a>
+  </header>
+
+  <div class="wrapper">
+    <h2>Choose Your Style</h2>
+    <p class="subtitle">Keep it simple with Basic, or go with a ready-made template.</p>
+
+    <div class="style-grid" id="styleGrid"></div>
+    <div class="color-section" id="colorSection">
+      <p>Pick Color</p>
+      <div class="color-options" id="colorPicker"></div>
+    </div>
+
+    <div class="actions">
+      <button id="backBtn" onclick="window.location.href = 'chooseframe.html'">Back</button>
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script src="templates.js"></script>
+  <script>
+    const COLORS = ["#fffdfc", "#dfc6a0", "#e3dff2", "#f8dada", "#daf3d5", "#121212"];
+
+    let selectedStyle = localStorage.getItem("photoStyle");
+    if (!STRIP_STYLES[selectedStyle]) selectedStyle = "basic";
+
+    let selectedColor = localStorage.getItem("photoBackgroundColor") || "";
+    if (!/^#[0-9a-f]{6}$/i.test(selectedColor)) selectedColor = COLORS[0];
+
+    const count = Math.min(4, Math.max(2, parseInt(localStorage.getItem("photoCount")) || 2));
+    const grid = document.getElementById("styleGrid");
+    const colorSection = document.getElementById("colorSection");
+    const colorPicker = document.getElementById("colorPicker");
+    const templateNote = document.getElementById("templateNote");
+
+    function buildMini(id) {
+      const wrap = document.createElement("div");
+      wrap.className = "mini-wrap";
+      const strip = document.createElement("div");
+      strip.className = "mini-strip";
+      strip.setAttribute("data-count", count);
+      for (let i = 0; i < count; i++) {
+        const box = document.createElement("div");
+        box.className = "mini-box";
+        strip.appendChild(box);
+      }
+      styleStrip(strip, null, { id: id, color: selectedColor });
+
+      wrap.appendChild(strip);
+      return wrap;
+    }
+
+    function renderStyles() {
+      grid.innerHTML = "";
+      Object.keys(STRIP_STYLES).forEach((id) => {
+        const cfg = STRIP_STYLES[id];
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "style-card" + (id === selectedStyle ? " selected" : "");
+        card.setAttribute("aria-pressed", id === selectedStyle ? "true" : "false");
+
+        const name = document.createElement("span");
+        name.className = "name";
+        name.textContent = cfg.name;
+        const desc = document.createElement("span");
+        desc.className = "desc";
+        desc.textContent = cfg.desc;
+
+        card.appendChild(buildMini(id));
+        card.appendChild(name);
+        card.appendChild(desc);
+        card.addEventListener("click", () => {
+          selectedStyle = id;
+          renderStyles();
+        });
+        grid.appendChild(card);
+      });
+
+      const isBasic = selectedStyle === "basic";
+      colorSection.style.display = isBasic ? "block" : "none";
+      templateNote.style.display = isBasic ? "none" : "block";
+    }
+
+    function renderColors() {
+      colorPicker.innerHTML = "";
+      COLORS.forEach((c) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "color-option" + (c === selectedColor ? " selected" : "");
+        dot.style.backgroundColor = c;
+        dot.setAttribute("aria-label", "Color " + c);
+        dot.addEventListener("click", () => {
+          selectedColor = c;
+          renderColors();
+          renderStyles();
+        });
+        colorPicker.appendChild(dot);
+      });
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      localStorage.setItem("photoStyle", selectedStyle);
+      if (selectedStyle === "basic") {
+        localStorage.setItem("photoBackgroundColor", selectedColor);
+      }
+
+      const photoMethod = localStorage.getItem("photoMethod");
+      window.location.href = photoMethod === "choosepic" ? "choosepic.html" : "camera.html";
+    });
+
+    renderColors();
+    renderStyles();
+  </script>
+</body>
+</html>
