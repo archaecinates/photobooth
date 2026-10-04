@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photo Booth</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+  <script src="templates.js"></script>
 
   <style>
     @font-face {
@@ -33,7 +33,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 112vh;
+      min-height: 112vh;
       background: #fffaf7;
       margin: 0;
     }
@@ -69,13 +69,13 @@
       padding: 8px;
       display: grid;
       align-items: center;
+      justify-items: center;
       gap: 8px;
       width: 124px;
       animation: slideDown 1s ease-in-out;
       background-color: white;
       font-family: 'Dancing Script', cursive;
     }
-
     .photo-strip[data-count="1"],
     .photo-strip[data-count="2"],
     .photo-strip[data-count="3"] {
@@ -110,6 +110,9 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    .framing-text {
+      color: #5b4636;
+    }
 
     #download-btn {
       background-color: #866e5d;
@@ -118,6 +121,11 @@
       border-radius: 5px;
       cursor: pointer;
       margin-top: 20px;
+    }
+
+    #download-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
     }
   </style>
 </head>
@@ -128,7 +136,7 @@
   </header>
 
   <div class="text-center">
-    <p class="text-brown text-lg italic font-semibold mt-12 md:mt-24">
+    <p class="framing-text text-lg italic font-semibold mt-12 md:mt-24">
       Framing this moment...
     </p>
     <br />
@@ -139,21 +147,295 @@
   </div>
 
   <script>
+    function parseFilter(str) {
+      const ops = [];
+      if (!str || str === "none") return ops;
+      const re = /([a-z-]+)\(([^)]+)\)/g;
+      let m;
+      while ((m = re.exec(str))) ops.push({ fn: m[1], arg: m[2].trim() });
+      return ops;
+    }
+
+    function filterNum(arg) {
+      return arg.endsWith("%") ? parseFloat(arg) / 100 : parseFloat(arg);
+    }
+
+    function filterAngle(arg) {
+      const v = parseFloat(arg);
+      if (arg.endsWith("rad")) return (v * 180) / Math.PI;
+      if (arg.endsWith("turn")) return v * 360;
+      return v;
+    }
+
+    function applyMatrix(d, m) {
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i + 1], b = d[i + 2];
+        d[i] = m[0] * r + m[1] * g + m[2] * b;
+        d[i + 1] = m[3] * r + m[4] * g + m[5] * b;
+        d[i + 2] = m[6] * r + m[7] * g + m[8] * b;
+      }
+    }
+
+    function applyFilterToImageData(imgData, filterStr) {
+      const d = imgData.data;
+      parseFilter(filterStr).forEach(({ fn, arg }) => {
+        if (fn === "grayscale") {
+          const a = 1 - Math.min(1, Math.max(0, filterNum(arg)));
+          applyMatrix(d, [
+            0.2126 + 0.7874 * a, 0.7152 - 0.7152 * a, 0.0722 - 0.0722 * a,
+            0.2126 - 0.2126 * a, 0.7152 + 0.2848 * a, 0.0722 - 0.0722 * a,
+            0.2126 - 0.2126 * a, 0.7152 - 0.7152 * a, 0.0722 + 0.9278 * a,
+          ]);
+        } else if (fn === "sepia") {
+          const a = 1 - Math.min(1, Math.max(0, filterNum(arg)));
+          applyMatrix(d, [
+            0.393 + 0.607 * a, 0.769 - 0.769 * a, 0.189 - 0.189 * a,
+            0.349 - 0.349 * a, 0.686 + 0.314 * a, 0.168 - 0.168 * a,
+            0.272 - 0.272 * a, 0.534 - 0.534 * a, 0.131 + 0.869 * a,
+          ]);
+        } else if (fn === "saturate") {
+          const s = Math.max(0, filterNum(arg));
+          applyMatrix(d, [
+            0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s,
+            0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s,
+            0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s,
+          ]);
+        } else if (fn === "hue-rotate") {
+          const rad = (filterAngle(arg) * Math.PI) / 180;
+          const c = Math.cos(rad), s = Math.sin(rad);
+          applyMatrix(d, [
+            0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928,
+            0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283,
+            0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072,
+          ]);
+        } else if (fn === "brightness") {
+          const b = Math.max(0, filterNum(arg));
+          for (let i = 0; i < d.length; i += 4) {
+            d[i] *= b; d[i + 1] *= b; d[i + 2] *= b;
+          }
+        } else if (fn === "contrast") {
+          const c = Math.max(0, filterNum(arg));
+          for (let i = 0; i < d.length; i += 4) {
+            d[i] = (d[i] - 127.5) * c + 127.5;
+            d[i + 1] = (d[i + 1] - 127.5) * c + 127.5;
+            d[i + 2] = (d[i + 2] - 127.5) * c + 127.5;
+          }
+        }
+      });
+    }
+
+    function drawPhoto(ctx, img, x, y, w, h, S, filter) {
+      const off = document.createElement("canvas");
+      off.width = Math.round(w * S);
+      off.height = Math.round(h * S);
+      const o = off.getContext("2d");
+
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      const tr = w / h, ir = iw / ih;
+      let sx = 0, sy = 0, sw = iw, sh = ih;
+      if (ir > tr) { sw = ih * tr; sx = (iw - sw) / 2; }
+      else { sh = iw / tr; sy = (ih - sh) / 2; }
+      o.drawImage(img, sx, sy, sw, sh, 0, 0, off.width, off.height);
+
+      const data = o.getImageData(0, 0, off.width, off.height);
+      applyFilterToImageData(data, filter);
+      o.putImageData(data, 0, 0);
+      ctx.drawImage(off, x * S, y * S, w * S, h * S);
+    }
+
+    function drawDecor(ctx, x, y, w, h, S, p) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x * S, y * S, w * S, h * S);
+      ctx.clip();
+      if (p.type === "checker") {
+        const c = p.size / 2;
+        const cols = Math.ceil(w / c), rows = Math.ceil(h / c);
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            ctx.fillStyle = (i + j) % 2 === 0 ? p.c2 : p.c1;
+            ctx.fillRect((x + i * c) * S, (y + j * c) * S, c * S, c * S);
+          }
+        }
+      } else {
+        for (let px = 0; px < w; px += p.size * 2) {
+          if (p.c1 !== "transparent") {
+            ctx.fillStyle = p.c1;
+            ctx.fillRect((x + px) * S, y * S, p.size * S, h * S);
+          }
+          if (p.c2 !== "transparent") {
+            ctx.fillStyle = p.c2;
+            ctx.fillRect((x + px + p.size) * S, y * S, p.size * S, h * S);
+          }
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawText(ctx, el, x, y, w, h, S) {
+      let t = (el.innerText || el.textContent || "").trim();
+      if (!t) return;
+      const cs = getComputedStyle(el);
+      if (cs.textTransform === "uppercase") t = t.toUpperCase();
+
+      ctx.save();
+      ctx.fillStyle = cs.color;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.font = cs.fontStyle + " " + cs.fontWeight + " " + parseFloat(cs.fontSize) * S + "px " + cs.fontFamily;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = (parseFloat(cs.letterSpacing) || 0) * S + "px";
+
+      const maxW = (w - 12) * S;
+      if (ctx.measureText(t).width > maxW) {
+        let cut = t;
+        while (cut.length > 0 && ctx.measureText(cut + "\u2026").width > maxW) cut = cut.slice(0, -1);
+        t = cut + "\u2026";
+      }
+      ctx.fillText(t, (x + w / 2) * S, (y + h / 2) * S);
+      ctx.restore();
+    }
+
+    function drawTemplateText(ctx, text, t) {
+      ctx.save();
+      ctx.fillStyle = t.color;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "left";
+      ctx.font = t.size + "px " + t.font;
+      const sp = t.letterSpacing || 0;
+      const measure = (s) =>
+        Array.from(s).reduce((w, ch) => w + ctx.measureText(ch).width + sp, 0);
+
+      let s = text;
+      if (measure(s) > t.w) {
+        const chars = Array.from(s);
+        while (chars.length && measure(chars.join("") + "\u2026") > t.w) chars.pop();
+        s = chars.join("") + "\u2026";
+      }
+
+      let x = t.x + t.w / 2 - measure(s) / 2;
+      const y = t.y + t.h / 2;
+      Array.from(s).forEach((ch) => {
+        ctx.fillText(ch, x, y);
+        x += ctx.measureText(ch).width + sp;
+      });
+      ctx.restore();
+    }
+
+    async function renderImageTemplate(strip, filter) {
+      const cfg = STRIP_STYLES[strip.dataset.tpl];
+      const tpl = cfg.image[strip.dataset.tplKey];
+      const overlay = strip.querySelector(".strip-overlay");
+      const photos = Array.from(strip.querySelectorAll("img:not(.strip-overlay)"));
+      await Promise.all(
+        [overlay].concat(photos).map((img) =>
+          img.decode ? img.decode().catch(() => {}) : Promise.resolve()
+        )
+      );
+      if (!overlay.complete || !overlay.naturalWidth) {
+        throw new Error("Template image failed to load: " + tpl.src);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = tpl.w;
+      canvas.height = tpl.h;
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = cfg.bg;
+      ctx.fillRect(0, 0, tpl.w, tpl.h);
+      photos.forEach((img, i) => {
+        const s = tpl.slots[i];
+        if (s) drawPhoto(ctx, img, s.x, s.y, s.w, s.h, 1, filter);
+      });
+
+      ctx.drawImage(overlay, 0, 0, tpl.w, tpl.h);
+      const textEl = strip.querySelector("#photo-date");
+      const txt = textEl ? (textEl.innerText || textEl.textContent || "").trim() : "";
+      if (tpl.text && txt) {
+        await document.fonts.ready;
+        drawTemplateText(ctx, txt, tpl.text);
+      }
+      return canvas;
+    }
+
+    async function renderStripToCanvas(strip, filter, S) {
+      if (strip.dataset.tpl) return renderImageTemplate(strip, filter);
+      await document.fonts.ready;
+      try { await document.fonts.load("italic 12px 'Dancing Script'"); } catch (e) {}
+      await Promise.all(
+        Array.from(strip.querySelectorAll("img")).map((img) =>
+          img.decode ? img.decode().catch(() => {}) : Promise.resolve()
+        )
+      );
+
+      const sr = strip.getBoundingClientRect();
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(sr.width * S);
+      canvas.height = Math.round(sr.height * S);
+      const ctx = canvas.getContext("2d");
+      const cs = getComputedStyle(strip);
+
+      ctx.fillStyle = cs.backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const bw = parseFloat(cs.borderTopWidth) || 0;
+      if (bw > 0 && cs.borderTopStyle !== "none") {
+        ctx.strokeStyle = cs.borderTopColor;
+        ctx.lineWidth = bw * S;
+        ctx.strokeRect((bw * S) / 2, (bw * S) / 2, canvas.width - bw * S, canvas.height - bw * S);
+      }
+
+      Array.from(strip.children).forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const x = r.left - sr.left, y = r.top - sr.top;
+        if (el.tagName === "IMG") {
+          drawPhoto(ctx, el, x, y, r.width, r.height, S, filter);
+        } else if (el.classList.contains("strip-decor")) {
+          drawDecor(ctx, x, y, r.width, r.height, S, JSON.parse(el.dataset.pattern));
+        } else if (el.id === "photo-date") {
+          drawText(ctx, el, x, y, r.width, r.height, S);
+        }
+      });
+      return canvas;
+    }
+
+    //untuk user iphone nanti akan buka menu Share agar bisa save image ke Photos dan untuk android akan langsung download image
+    async function saveBlob(blob, filename) {
+      const isIOS =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const file = new File([blob], filename, { type: "image/png" });
+
+      if (isIOS && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] });
+          return;
+        } catch (e) {
+          if (e.name === "AbortError") return; 
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const photoStrip = document.getElementById("photo-strip");
       const savedPhotos = JSON.parse(localStorage.getItem("savedPhotos")) || [];
       const savedFilter = localStorage.getItem("photoFilter") || "";
       const storedText = localStorage.getItem("photoText") || "";
-      const storedColor = localStorage.getItem("photoBackgroundColor") || "#ffffff";
 
       photoStrip.innerHTML = "";
-
       savedPhotos.forEach((src) => {
         if (src && src.startsWith("data:image")) {
           const img = document.createElement("img");
           img.src = src;
           img.style.filter = savedFilter || "none";
-          img.crossOrigin = "anonymous"; // ← Tambahkan ini di sini
+          img.crossOrigin = "anonymous";
           photoStrip.appendChild(img);
         }
       });
@@ -162,75 +444,62 @@
       const textP = document.createElement("p");
       textP.id = "photo-date";
       textP.innerText = storedText;
-
       textP.style.fontFamily = "'Dancing Script', cursive";
       photoStrip.style.fontFamily = "'Dancing Script', cursive";
-
       photoStrip.appendChild(textP);
-      photoStrip.style.backgroundColor = storedColor;
 
       const count = savedPhotos.length;
       photoStrip.setAttribute("data-count", count);
+      styleStrip(photoStrip, textP);
 
-      adjustTextColor(storedColor);
-
-      function adjustTextColor(bgColor) {
-        const rgb = bgColor.match(/\d+/g);
-        if (rgb) {
-          const brightness =
-            (parseInt(rgb[0]) * 299 +
-              parseInt(rgb[1]) * 587 +
-              parseInt(rgb[2]) * 114) /
-            1000;
-          textP.style.color = brightness < 128 ? "#f0f0f0" : "#121212";
+      let preparedBlob = null;
+      let preparing = null;
+      function prepareBlob() {
+        if (!preparing) {
+          preparing = renderStripToCanvas(photoStrip, savedFilter, 5)
+            .then(
+              (canvas) =>
+                new Promise((resolve, reject) =>
+                  canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png")
+                )
+            )
+            .then((b) => {
+              preparedBlob = b;
+              return b;
+            })
+            .catch((err) => {
+              preparing = null;
+              throw err;
+            });
         }
+        return preparing;
       }
 
-      document.getElementById("download-btn").addEventListener("click", () => {
-        const images = photoStrip.querySelectorAll("img");
-        const scale = 5;
+if (savedPhotos.length) {
+        prepareBlob().catch((err) => console.error("Prepare failed:", err));
+      }
 
-        if (!images.length) {
+      const downloadBtn = document.getElementById("download-btn");
+      downloadBtn.addEventListener("click", async () => {
+        if (!savedPhotos.length) {
           alert("No photos found. Please go back and add some.");
           return;
         }
 
-        // Tunggu semua gambar selesai dimuat
-        const promises = Array.from(images).map((img) => {
-          return new Promise((resolve) => {
-            if (!img.src || img.style.display === "none") return resolve();
-            if (img.complete) return resolve();
-            img.onload = resolve;
-            img.onerror = resolve;
-          });
-        });
+        const label = downloadBtn.textContent;
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = "Saving...";
 
-        Promise.all(promises).then(() => {
-          document.fonts.ready.then(() => {
-            domtoimage.toPng(photoStrip, {
-              width: photoStrip.offsetWidth * scale,
-              height: photoStrip.offsetHeight * scale,
-              style: {
-                transform: "scale(" + scale + ")",
-                transformOrigin: "top left",
-                width: photoStrip.offsetWidth + "px",
-                height: photoStrip.offsetHeight + "px",
-              },
-            })
-              .then((dataUrl) => {
-                const link = document.createElement("a");
-                link.href = dataUrl;
-                link.download = "photo-booth.png";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-              })
-              .catch((error) => {
-                console.error("Error capturing image: ", error);
-                alert("Download failed.");
-              });
-          });
-        });
+        try {
+          const blob = preparedBlob || (await prepareBlob());
+          await saveBlob(blob, "photo-booth.png");
+        } catch (error) {
+          console.error("Error capturing image: ", error);
+          alert("Download failed. Please try again.");
+        } finally {
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = label;
+        }
       });
     });
   </script>
