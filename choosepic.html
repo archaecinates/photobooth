@@ -6,12 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Your Pics</title>
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@300;400;700&display=swap" rel="stylesheet" />
+
   <style>
     body {
       font-family: 'Lora', serif;
       background-color: #fefaf5;
       text-align: center;
       padding: 50px 20px;
+      color: #5b4636;
+    }
+
+    header {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      z-index: 10;
+    }
+
+    .home-tag {
+      text-decoration: none;
+      color: #5a4637;
+      font-size: 21px;
+      font-weight: bold;
     }
 
     h1 {
@@ -70,8 +86,15 @@
       display: none;
     }
 
-    #doneButton {
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
       margin-top: 30px;
+    }
+
+    #doneButton,
+    #backButton {
       padding: 10px 20px;
       border: 1.5px solid #5b4636;
       background: transparent;
@@ -88,26 +111,70 @@
       color: #f0e6dd;
     }
 
+    #backButton {
+      border-color: #c3a792;
+      color: #866e5d;
+    }
+
+    #backButton:hover {
+      background: #f0e6dd;
+      border-color: #5b4636;
+      color: #5b4636;
+    }
+
     @media (max-width: 600px) {
+      body {
+        padding: 20px 16px 28px;
+      }
+
+      h1 {
+        font-size: 22px;
+        margin: 0;
+      }
+
       .container-wrapper {
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        max-width: 360px;
+        margin: 20px auto 0;
+      }
+
+      .container-wrapper[data-count="3"] {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
       }
 
       .upload-container {
-        width: 80%;
-        max-width: 300px;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: none;
         height: auto;
         aspect-ratio: 1 / 1;
       }
 
-      h1 {
-        font-size: 26px;
+      .upload-text {
+        font-size: 13px;
       }
 
-      #doneButton {
-        width: 80%;
-        max-width: 250px;
+      header {
+        position: static;
+        text-align: left;
+        margin-bottom: 12px;
+      }
+
+      .home-tag {
+        font-size: 18px;
+      }
+
+      .actions {
+        max-width: 280px;
+        margin: 24px auto 0;
+      }
+
+      .actions button {
+        flex: 1;
+        padding: 12px 16px;
         font-size: 15px;
       }
     }
@@ -115,24 +182,46 @@
 </head>
 
 <body>
+
+  <header>
+    <a href="index.html" class="home-tag">photobooth</a>
+  </header>
+
   <h1>Choose Your Pics</h1>
+
   <div class="container-wrapper" id="uploadContainer"></div>
 
-  <button id="doneButton" onclick="finishSelection()">Done</button>
+  <div class="actions">
+    <button id="backButton" onclick="window.location.href = 'choosestyle.html'">
+      Back
+    </button>
+
+    <button id="doneButton" onclick="finishSelection()">
+      Done
+    </button>
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       let photoCount = localStorage.getItem("photoCount") || 2;
       let container = document.getElementById("uploadContainer");
 
+      container.setAttribute("data-count", photoCount);
+
       for (let i = 1; i <= photoCount; i++) {
         let uploadDiv = document.createElement("div");
+
         uploadDiv.classList.add("upload-container");
         uploadDiv.id = `uploadBox${i}`;
 
         uploadDiv.innerHTML = `
           <span class="upload-text">Upload ${i}</span>
-          <input type="file" id="fileInput${i}" accept="image/*" onchange="previewImage(event, ${i})">
+          <input
+            type="file"
+            id="fileInput${i}"
+            accept="image/*"
+            onchange="previewImage(event, ${i})"
+          >
           <img id="preview${i}" style="display: none;">
         `;
 
@@ -146,14 +235,19 @@
 
     function previewImage(event, index) {
       const file = event.target.files[0];
+
       if (file) {
         const reader = new FileReader();
+
         reader.onload = function (e) {
           let img = new Image();
           img.src = e.target.result;
+
           img.onload = function () {
-            const MAX_WIDTH = 1200; // maksimal agar tidak terlalu besar
-            const scale = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
+            const MAX_WIDTH = 800;
+            const scale = img.width > MAX_WIDTH
+              ? MAX_WIDTH / img.width
+              : 1;
 
             const newWidth = img.width * scale;
             const newHeight = img.height * scale;
@@ -163,14 +257,26 @@
 
             canvas.width = newWidth;
             canvas.height = newHeight;
-            ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-            const compressedImage = canvas.toDataURL("image/jpeg", 0.9);
+            ctx.drawImage(
+              img,
+              0,
+              0,
+              newWidth,
+              newHeight
+            );
 
-            document.getElementById('preview' + index).src = compressedImage;
-            document.getElementById('preview' + index).style.display = 'block';
+            const compressedImage =
+              canvas.toDataURL("image/jpeg", 0.85);
+
+            document.getElementById(`preview${index}`).src =
+              compressedImage;
+
+            document.getElementById(`preview${index}`).style.display =
+              "block";
           };
         };
+
         reader.readAsDataURL(file);
       }
     }
@@ -180,8 +286,13 @@
       let photoCount = localStorage.getItem("photoCount") || 2;
 
       for (let i = 1; i <= photoCount; i++) {
-        const img = document.getElementById('preview' + i);
-        if (img && img.src && img.style.display !== 'none') {
+        const img = document.getElementById(`preview${i}`);
+
+        if (
+          img &&
+          img.src &&
+          img.style.display !== "none"
+        ) {
           selectedImages.push(img.src);
         }
       }
@@ -192,13 +303,30 @@
       }
 
       try {
-        localStorage.setItem("savedPhotos", JSON.stringify(selectedImages));
-        console.log("Images saved to localStorage:", selectedImages);
+        localStorage.setItem(
+          "savedPhotos",
+          JSON.stringify(selectedImages)
+        );
+
+        console.log(
+          "Images saved to localStorage:",
+          selectedImages
+        );
+
         window.location.href = "choose.html";
+
       } catch (error) {
-        console.error("Error saving to localStorage:", error);
+        console.error(
+          "Error saving to localStorage:",
+          error
+        );
+
+        alert(
+          "Couldn't save your photos (storage is full). Try smaller photos."
+        );
       }
     }
   </script>
+
 </body>
 </html>
